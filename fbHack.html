@@ -1,7 +1,48 @@
 <!DOCTYPE HTML>
 <html>
 	<head>
-		<title>Invite all friends to Facebook Page</title>
+		<title>Invites to Facebook Page</title>
 
+		<meta charset="utf-8" />
+		<meta name="viewport" content="width=device-width, initial-scale=1" />
+		<!--[if lte IE 8]><script src="assets/js/ie/html5shiv.js"></script><![endif]-->
+		<link rel="stylesheet" href="assets/css/main.css" />
+		<!--[if lte IE 8]><link rel="stylesheet" href="assets/css/ie8.css" /><![endif]-->
+		<!--[if lte IE 9]><link rel="stylesheet" href="assets/css/ie9.css" /><![endif]-->
 	</head>
+	<body>
+
+		<!-- Header -->
+			<section id="header">
+				<header class="major">
+					<h1>How to Invite All Your Friends to Fireflies</h1>
+					<p>Go to the Facebook Page such as <a href="http://facebook.com/firefliesapp" class="button"> Fireflies</a></p>
+					<br>
+					<p>
+					Then on the left of the screen find and click on the "Invite Friends" button. After the popup opens, instead of going through and clicking "Invite" for each friend do the following:
+					</p>
+					<br>
+					<p><b>
+					Use the keyboard shortcut Command + Option + J (Mac) or Control + Shift + J (Windows/Linux) to open the console. In the console copy and paste the following script- it will automatically click the invite button for you! 
+					
+					<i>
+					var inputs = document.getElementsByClassName('uiButton _1sm'); 
+for(var i=0; i<inputs.length;i++) { 
+inputs[i].click(); 
+}
+					</i> 	
+
+						
+					</b>
+					</p>
+				</header>
+				<div class="container">
+					<ul class="actions">
+						<li><a href="#one" class="button special scrolly">Begin</a></li>
+					</ul>
+				</div>
+			</section>
+
+
+	</body>
 </html>
