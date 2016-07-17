@@ -14,6 +14,8 @@ Credits:
 		Skel (skel.io)
 
 
+Note: Below doesn't work. Just use play.spotify.com and use ublock :p
+
 Add (How to block Spotify ads on OSX)
 
 1) Close Spotify
