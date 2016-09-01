@@ -11,7 +11,8 @@
 	<link rel="stylesheet" type="text/css" href="dist/components/reset.css">
 	<link rel="stylesheet" type="text/css" href="dist/components/site.css">
 
-	<link rel="stylesheet" type="text/css" href="dist/components/container.css">
+    <link rel="stylesheet" type="text/css" href="dist/components/animate.min.css">
+    <link rel="stylesheet" type="text/css" href="dist/components/container.css">
 	<link rel="stylesheet" type="text/css" href="dist/components/grid.css">
 	<link rel="stylesheet" type="text/css" href="dist/components/header.css">
 	<link rel="stylesheet" type="text/css" href="dist/components/image.css">
@@ -150,6 +151,8 @@
 	<script src="dist/components/visibility.js"></script>
 	<script src="dist/components/sidebar.js"></script>
 	<script src="dist/components/transition.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/wow/0.1.12/wow.min.js"></script>
+    
 	<script>
 		$(document)
 				.ready(function() {
@@ -233,11 +236,11 @@
 	<div id="about" class="ui vertical stripe segment">
 		<div class="ui middle aligned stackable grid container">
 			<div class="row">
-				<div class="eight wide column">
+				<div class="eight wide column wow bounceInLeft">
 					<h3 class="ui header">About Me</h3>
 					<p>Senior studying Computer Engineering at Drexel University. My senior design is based on layering different machine learning algorithms to help quad-pedal robots adapt to unknown environments. Outside of school I love working on projects that help others and am an avid skier.</p>
 				</div>
-				<div class="six wide right floated center aligned column">
+				<div class="six wide right floated center aligned column wow bounceInRight">
 					<img src="images/om.jpg" class="ui large rounded image">
                     <span>Credit to my little sister Shree</span>
                 </div>
@@ -249,13 +252,13 @@
     <div id="experience" class="ui vertical stripe inverted centered segment">
         <div class="ui middle aligned stackable grid inverted container">
             <div class="row">
-                <div class="five wide column">
+                <div class="five wide column wow bounceInLeft">
                     <img class="ui large rounded image" src="images/laptop2.svg">
                 </div>
                 <div class="nine wide right floated column">
                     <h3 class="ui inverted header">Experience</h3>
                     <div class="ui floated cards">
-                        <div class="card">
+                        <div class="card wow flipInX data-wow-delay=".25s">
                             <div class="content">
                                 <div class="header">Fireflies A.I.</div>
                                 <div class="meta">
@@ -289,7 +292,7 @@
                                 </div>
                             </div>
                         </div>
-                        <div class="card">
+                        <div class="card wow flipInX data-wow-delay=".5s"">
                             <div class="content">
                                 <div class="header">Fireflies Delivery</div>
                                 <div class="meta">
@@ -323,7 +326,7 @@
                                 </div>
                             </div>
                         </div>
-                        <div class="card">
+                        <div class="card wow flipInX data-wow-delay=".75s"">
                             <div class="content">
                                 <div class="header">Lockheed Martin</div>
                                 <div class="meta">
@@ -357,7 +360,7 @@
                                 </div>
                             </div>
                         </div>
-                        <div class="card">
+                        <div class="card wow flipInX data-wow-delay="1s"">
                             <div class="content">
                                 <div class="header">Lockheed Martin</div>
                                 <div class="meta">
@@ -404,7 +407,7 @@
                 <div class="nine wide column">
                     <h3 class="ui header">Projects</h3>
                     <div class="ui floated cards">
-                        <div class="card">
+                        <div class="card wow flipInY data-wow-delay=".25s">
                             <div class="content">
                                 <div class="header">Drexel Hyperloop</div>
                                 <div class="meta">
@@ -438,7 +441,7 @@
                                 </div>
                             </div>
                         </div>
-                        <div class="card">
+                        <div class="card wow flipInY data-wow-delay=".25s">
                             <div class="content">
                                 <div class="header">Hackathons</div>
                                 <div class="meta">
@@ -475,7 +478,7 @@
                             </div>
                         </div>
 
-                        <div class="card">
+                        <div class="card wow flipInY data-wow-delay=".5s">
                             <div class="content">
                                 <div class="header">Current & Upcoming Projects</div>
                                 <div class="meta">
@@ -511,7 +514,7 @@
                         </div>
                     </div>
                 </div>
-                <div class="six wide right floated column">
+                <div class="six wide right floated column wow bounceInRight">
                     <img class="ui large rounded image" src="images/robot.gif">
                 </div>
             </div>
@@ -523,10 +526,10 @@
     <div id="blog" class="ui vertical inverted stripe segment">
         <div class="ui middle aligned stackable grid container">
             <div class="row">
-                <div class="six wide column">
+                <div class="six wide column wow bounce data-wow-delay=".5s"">
                     <script async src="https://static.medium.com/embed.js"></script><a class="m-profile" href="https://medium.com/@om23">Om Mahida</a>
                 </div>
-                <div class="eight wide right floated column">
+                <div class="eight wide right floated column wow flipInX">
                     <h3 class="ui inverted header">Blog</h3>
                     <p>I started writing last year about things I experience or find interesting. My articles range from writing about technology to historical events. Feel free to ping me if you want to chat :)</p>
 
@@ -569,11 +572,11 @@
     <div id="fun" class="ui vertical stripe segment">
         <div class="ui middle aligned stackable grid container">
             <div class="row">
-                <div class="eight wide column">
-                    <h3 class="ui header">Fun</h3>
+                <div class="eight wide column wow lightSpeedIn">
+                    <h3 class="ui header wow hinge">Fun</h3>
                     <p>Avid Skier, random squash player, love going for runs while its snowing or raining, obsession with good food and beer, and advocate for open data & government.</p>
                 </div>
-                <div class="six wide right floated center aligned column">
+                <div class="six wide right floated center aligned column wow lightSpeedIn">
                     <img src="images/skiing.jpg" class="ui large rounded image">
                     <span>Credit to PRISMA</span>
                 </div>
@@ -610,6 +613,12 @@
 		</div>
 	</div>
 </div>
+
+<script>
+    $(function(){
+        new WOW().init();
+    });
+</script>
 
 </body>
 
