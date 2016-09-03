@@ -2,9 +2,11 @@ Hi!
 
 This is a quick website I setup to showcase myself (Om Mahida) and my experience.
 
-Credit:
-		Semantic-UI
+It used to be a template from HTML5 but I switched to my own design using Semantic-UI styling which I find extremely simple and not bloated. 
 
+
+
+#random
 
 Note: Below doesn't work even though I thought it did, I'll try finding another workaround. Just use play.spotify.com and use ublock or better pay for Spotify :P
 
