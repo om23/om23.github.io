@@ -1,12 +1,12 @@
 Hi!
 
-This is a quick webpage I setup to showcase myself and my experience.
+This is a quick website I setup to showcase myself (Om Mahida) and my experience.
 
 Credit:
 		Semantic-UI
 
 
-Note: Below doesn't work. Just use play.spotify.com and use ublock :p
+Note: Below doesn't work even though I thought it did, I'll try finding another workaround. Just use play.spotify.com and use ublock or better pay for Spotify :P
 
 Add (How to block Spotify ads on OSX)
 
