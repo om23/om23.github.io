@@ -1,652 +1,152 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
 <head>
-	<!-- Standard Meta -->
-	<meta charset="utf-8" />
-	<meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1" />
-	<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0">
-
-    <!-- Fav Icon -->
-    <link rel="icon" type="image/png" href="images/favicon-32x32.png" sizes="32x32" />
-    <link rel="icon" type="image/png" href="images/favicon-16x16.png" sizes="16x16" />
-
-	<!-- Site Properties -->
-	<title>Om Mahida - Computer Engineering Student at Drexel University</title>
-	<link rel="stylesheet" type="text/css" href="dist/components/reset.css">
-	<link rel="stylesheet" type="text/css" href="dist/components/site.css">
-
-    <link rel="stylesheet" type="text/css" href="dist/components/animate.min.css">
-    <link rel="stylesheet" type="text/css" href="dist/components/container.css">
-	<link rel="stylesheet" type="text/css" href="dist/components/grid.css">
-	<link rel="stylesheet" type="text/css" href="dist/components/header.css">
-	<link rel="stylesheet" type="text/css" href="dist/components/image.css">
-	<link rel="stylesheet" type="text/css" href="dist/components/menu.css">
-    <link rel="stylesheet" type="text/css" href="dist/components/card.css">
-    <link rel="stylesheet" type="text/css" href="dist/components/feed.css">
-    <link rel="stylesheet" type="text/css" href="dist/components/divider.css">
-	<link rel="stylesheet" type="text/css" href="dist/components/dropdown.css">
-	<link rel="stylesheet" type="text/css" href="dist/components/segment.css">
-	<link rel="stylesheet" type="text/css" href="dist/components/button.css">
-	<link rel="stylesheet" type="text/css" href="dist/components/list.css">
-    <link rel="stylesheet" type="text/css" href="dist/components/label.css">
-    <link rel="stylesheet" type="text/css" href="dist/components/item.css">
-    <link rel="stylesheet" type="text/css" href="dist/components/icon.css">
-	<link rel="stylesheet" type="text/css" href="dist/components/sidebar.css">
-    <link rel="stylesheet" type="text/css" href="dist/components/statistic.css">
-    <link rel="stylesheet" type="text/css" href="dist/components/transition.css">
-
-	<style type="text/css">
-
-
-        /*Typed Cursor*/
-        .typed-cursor{
-            opacity: 1;
-            -webkit-animation: blink 0.7s infinite;
-            -moz-animation: blink 0.7s infinite;
-            animation: blink 0.7s infinite;
-        }
-        @keyframes blink{
-            0% { opacity:1; }
-            50% { opacity:0; }
-            100% { opacity:1; }
-        }
-        @-webkit-keyframes blink{
-            0% { opacity:1; }
-            50% { opacity:0; }
-            100% { opacity:1; }
-        }
-        @-moz-keyframes blink{
-            0% { opacity:1; }
-            50% { opacity:0; }
-            100% { opacity:1; }
-        }
-
-
-		.hidden.menu {
-			display: none;
-		}
-
-		.masthead.segment {
-			min-height: 700px;
-			padding: 1em 0em;
-		}
-		.masthead .logo.item img {
-			margin-right: 1em;
-		}
-		.masthead .ui.menu .ui.button {
-			margin-left: 0.5em;
-		}
-		.masthead h1.ui.header {
-			margin-top: 3em;
-			margin-bottom: 0em;
-			font-size: 4em;
-			font-weight: normal;
-		}
-		.masthead h2 {
-			font-size: 1.7em;
-			font-weight: normal;
-		}
-
-		.ui.vertical.stripe {
-			padding: 8em 0em;
-		}
-		.ui.vertical.stripe h3 {
-			font-size: 2em;
-		}
-		.ui.vertical.stripe .button + h3,
-		.ui.vertical.stripe p + h3 {
-			margin-top: 3em;
-		}
-		.ui.vertical.stripe .floated.image {
-			clear: both;
-		}
-		.ui.vertical.stripe p {
-			font-size: 1.33em;
-		}
-		.ui.vertical.stripe .horizontal.divider {
-			margin: 3em 0em;
-		}
-
-		.quote.stripe.segment {
-			padding: 0em;
-		}
-		.quote.stripe.segment .grid .column {
-			padding-top: 5em;
-			padding-bottom: 5em;
-		}
-
-		.footer.segment {
-			padding: 5em 0em;
-		}
-
-		.secondary.pointing.menu .toc.item {
-			display: none;
-		}
-
-		@media only screen and (max-width: 700px) {
-			.ui.fixed.menu {
-				display: none !important;
-			}
-			.secondary.pointing.menu .item,
-			.secondary.pointing.menu .menu {
-				display: none;
-			}
-			.secondary.pointing.menu .toc.item {
-				display: block;
-			}
-			.masthead.segment {
-				min-height: 350px;
-			}
-			.masthead h1.ui.header {
-				font-size: 2em;
-				margin-top: 1.5em;
-			}
-			.masthead h2 {
-				margin-top: 0.5em;
-				font-size: 1.5em;
-			}
-		}
-
-
-	</style>
-
-	<script src="assets/library/jquery.min.js"></script>
-	<script src="assets/library/typed.js"></script>
-	<script src="dist/components/visibility.js"></script>
-	<script src="dist/components/sidebar.js"></script>
-	<script src="dist/components/transition.js"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/wow/0.1.12/wow.min.js"></script>
-    
-	<script>
-		$(document)
-				.ready(function() {
-
-					// fix menu when passed
-					$('.masthead')
-							.visibility({
-								once: false,
-								onBottomPassed: function() {
-									$('.fixed.menu').transition('fade in');
-								},
-								onBottomPassedReverse: function() {
-									$('.fixed.menu').transition('fade out');
-								}
-							})
-					;
-
-					// create sidebar and attach to menu open
-					$('.ui.sidebar')
-							.sidebar('attach events', '.toc.item')
-					;
-
-				})
-		;
-	</script>
-
-    <script>
-        (function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
-                    (i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
-                m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
-        })(window,document,'script','https://www.google-analytics.com/analytics.js','ga');
-
-        ga('create', 'UA-67509040-1', 'auto');
-        ga('send', 'pageview');
-
-    </script>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="description" content="Om Mahida — Product leader and builder. VP of Product at Medcrypt. Based in Seattle, WA.">
+  <meta property="og:title" content="Om Mahida">
+  <meta property="og:description" content="Product leader and builder. VP of Product at Medcrypt.">
+  <meta property="og:type" content="website">
+  <meta property="og:url" content="https://ommahida.com">
+  <title>Om Mahida</title>
+  <link rel="icon" type="image/x-icon" href="images/favicon.ico">
+  <link rel="icon" type="image/png" sizes="32x32" href="images/favicon-32x32.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="images/favicon-16x16.png">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="style.css">
 </head>
 <body>
+  <div class="container">
 
-<!-- Following Menu -->
-<div class="ui large top fixed hidden menu">
-	<div class="ui container">
-        <a href="#" class="active item">Home</a>
-        <a href="#about" class="item">About Om</a>
-        <a href="#experience" class="item">Experience</a>
-        <a href="#projects" class="item">Projects</a>
-        <a href="#blog" class="item">Blog</a>
-        <a href="#fun" class="item">Fun</a>
-    </div>
-</div>
+    <header>
+      <h1>Om Mahida</h1>
+      <p class="tagline">Product leader and builder. VP of Product at Medcrypt.</p>
+      <p class="meta">
+        <span>Seattle, WA</span>
+        <span class="sep">·</span>
+        <a href="mailto:ommahida@gmail.com">Email</a>
+        <span class="sep">·</span>
+        <a href="https://linkedin.com/in/ommahida" target="_blank" rel="noopener">LinkedIn</a>
+        <span class="sep">·</span>
+        <a href="https://github.com/om23" target="_blank" rel="noopener">GitHub</a>
+      </p>
+    </header>
 
-<!-- Sidebar Menu -->
-<div class="ui vertical inverted sidebar menu">
-    <a href="#" class="active item">Home</a>
-    <a href="#about" class="item">About Om</a>
-    <a href="#experience" class="item">Experience</a>
-    <a href="#projects" class="item">Projects</a>
-    <a href="#blog" class="item">Blog</a>
-    <a href="#fun" class="item">Fun</a>
-</div>
+    <main>
 
+      <section id="about">
+        <h2>About</h2>
+        <p>I'm a product leader with 9+ years building technical products, progressing from software engineer to VP of Product at Medcrypt. I use Claude Code daily to prototype and ship production features. I've launched two products from concept to Fortune 500 and federal agency customers, and I've been integrating LLMs into production products for 3+ years. Earlier, I co-founded Fireflies (now <a href="https://fireflies.ai" target="_blank" rel="noopener">Fireflies.ai</a>) with Sam Udotong and Krish Ramineni.</p>
+      </section>
 
-<!-- Page Contents -->
-<div class="pusher">
-	<div class="ui inverted vertical masthead center aligned segment">
+      <section id="experience">
+        <h2>Experience</h2>
 
-		<div class="ui container">
-			<div class="ui large secondary inverted pointing menu">
-				<a class="toc item">
-					<i class="sidebar icon"></i>
-				</a>
-				<a href="#" class="active item">Home</a>
-				<a href="#about" class="item">About Om</a>
-				<a href="#experience" class="item">Experience</a>
-				<a href="#projects" class="item">Projects</a>
-				<a href="#blog" class="item">Blog</a>
-                <a href="#fun" class="item">Fun</a>
-            </div>
-		</div>
-
-		<div class="ui text container">
-			<h1 class="ui inverted header">
-				OM MAHIDA
-			</h1>
-            <h2>
-                <span class="intro"></span>
-            </h2>
-		</div>
-	</div>
-
-
-	<div id="about" class="ui vertical stripe segment">
-		<div class="ui middle aligned stackable grid container">
-			<div class="row">
-				<div class="eight wide column wow bounceInLeft">
-					<h3 class="ui header">About Om</h3>
-					<p> Helping secure medical devices @MedCrypt. In my spare time I enjoy reading, skiing, and a sprinkle of side projects :)</p>
-				</div>
-				<div class="six wide right floated center aligned column wow bounceInRight">
-					<img src="images/om.jpg" class="ui large rounded image">
-                    <span>Credit to Shree</span>
-                </div>
-			</div>
-		</div>
-	</div>
-
-
-    <div id="experience" class="ui vertical stripe inverted centered segment">
-        <div class="ui middle aligned stackable grid inverted container">
-            <div class="row">
-                <div class="five wide column wow bounceInLeft">
-                    <img class="ui large rounded image" src="images/laptop2.svg">
-                </div>
-                <div class="nine wide right floated column">
-                    <h3 class="ui inverted header">Past Experience</h3>
-                    <div class="ui floated cards">
-                        <div class="card wow flipInX data-wow-delay=".25s">
-                            <div class="content">
-                                <div class="header">Fireflies A.I.</div>
-                                <div class="meta">
-                                    <span class="right floated time">2015-2016</span>
-                                    <span class="category">Co-Founder</span>
-                                </div>
-                            </div>
-                            <div class="content">
-                                <div class="ui small feed">
-                                    <div class="event">
-                                        <div class="content">
-                                            <div class="summary">
-                                                Designed and built Node.js app that was able to handle over concurrent 10,000 users
-                                            </div>
-                                        </div>
-                                    </div>
-                                    <div class="event">
-                                        <div class="content">
-                                            <div class="summary">
-                                                Modeled machine learning algorithms to help classify data in messages and emails with 98% success rate
-                                            </div>
-                                        </div>
-                                    </div>
-                                    <div class="event">
-                                        <div class="content">
-                                            <div class="summary">
-                                                Built website with React.js frontend, Meteor backend, and support for OAuth 2.0
-                                            </div>
-                                        </div>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-                        <div class="card wow flipInX data-wow-delay=".5s"">
-                            <div class="content">
-                                <div class="header">Fireflies Delivery</div>
-                                <div class="meta">
-                                    <span class="right floated time">2014-2015</span>
-                                    <span class="category">Co-Founder</span>
-                                </div>
-                            </div>
-                            <div class="content">
-                                <div class="ui small feed">
-                                    <div class="event">
-                                        <div class="content">
-                                            <div class="summary">
-                                                Developed an iOS application in Swift as client-side with cloud-based backend
-                                            </div>
-                                        </div>
-                                    </div>
-                                    <div class="event">
-                                        <div class="content">
-                                            <div class="summary">
-                                                Integrated more than 10 APIs including Braintree, Parse, Facebook, Alohar, MapKit, and Fabric
-                                            </div>
-                                        </div>
-                                    </div>
-                                    <div class="event">
-                                        <div class="content">
-                                            <div class="summary">
-                                                Won awards from Alohar Context-Aware Hackathon and MIT Bitcoin Competition
-                                            </div>
-                                        </div>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-                        <div class="card wow flipInX data-wow-delay=".75s"">
-                            <div class="content">
-                                <div class="header">Lockheed Martin</div>
-                                <div class="meta">
-                                    <span class="right floated time">2015</span>
-                                    <span class="category">Digital Signal Processing Engineer</span>
-                                </div>
-                            </div>
-                            <div class="content">
-                                <div class="ui small feed">
-                                    <div class="event">
-                                        <div class="content">
-                                            <div class="summary">
-                                                Developed radar signal processing algorithms in MATLAB improving overall simulation accuracy and speed
-                                            </div>
-                                        </div>
-                                    </div>
-                                    <div class="event">
-                                        <div class="content">
-                                            <div class="summary">
-                                                Refactored legacy code base to improve functionality and performance by 20%
-                                            </div>
-                                        </div>
-                                    </div>
-                                    <div class="event">
-                                        <div class="content">
-                                            <div class="summary">
-                                                Modeled DSP algorithms for a solid state radar array using Rhapsody
-                                            </div>
-                                        </div>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-                        <div class="card wow flipInX data-wow-delay="1s"">
-                            <div class="content">
-                                <div class="header">Lockheed Martin</div>
-                                <div class="meta">
-                                    <span class="right floated time">2014</span>
-                                    <span class="category">Software Engineer</span>
-                                </div>
-                            </div>
-                            <div class="content">
-                                <div class="ui small feed">
-                                    <div class="event">
-                                        <div class="content">
-                                            <div class="summary">
-                                                Developed automated regression software using Sikuli to verify graphical user interface
-                                            </div>
-                                        </div>
-                                    </div>
-                                    <div class="event">
-                                        <div class="content">
-                                            <div class="summary">
-                                                Built automation software architecture for automation scripts in Jenkins with Bash
-                                            </div>
-                                        </div>
-                                    </div>
-                                    <div class="event">
-                                        <div class="content">
-                                            <div class="summary">
-                                                Analyzed real-time command system data for networking, firmware, and software issues
-                                            </div>
-                                        </div>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            </div>
+        <div class="job">
+          <div class="job-header">
+            <span class="company">Medcrypt</span>
+            <span class="dates">Oct 2016 – Present</span>
+          </div>
+          <ul class="roles">
+            <li>VP of Product <span class="role-dates">2022 – Present</span></li>
+            <li>Product Manager <span class="role-dates">2020 – 2022</span></li>
+            <li>Software Engineer <span class="role-dates">2016 – 2020</span></li>
+          </ul>
+          <ul class="highlights">
+            <li>Built MSI from prototype to company flagship, now piloting with the FDA</li>
+            <li>Launched Helm from $0 to $500K ARR in 15 months</li>
+            <li>Transformed engineering deployment frequency from monthly to weekly</li>
+            <li>3+ years integrating LLMs into production products (RAG, context engineering, AI automation)</li>
+          </ul>
         </div>
-    </div>
 
-
-    <div id="projects" class="ui vertical stripe centered segment">
-        <div class="ui middle aligned stackable grid container">
-            <div class="row">
-                <div class="nine wide column">
-                    <h3 class="ui header">Projects</h3>
-                    <div class="ui floated cards">
-                        <div class="card wow flipInY data-wow-delay=".25s">
-                            <div class="content">
-                                <div class="header">Drexel Hyperloop</div>
-                                <div class="meta">
-                                    <span class="right floated time">2016</span>
-                                    <span class="category">Controls & Software Lead</span>
-                                </div>
-                            </div>
-                            <div class="content">
-                                <div class="ui small feed">
-                                    <div class="event">
-                                        <div class="content">
-                                            <div class="summary">
-                                                Designed initial system architecture that helped the team qualify for the finals in the SpaceX Hyperloop competition
-                                            </div>
-                                        </div>
-                                    </div>
-                                    <div class="event">
-                                        <div class="content">
-                                            <div class="summary">
-                                                Modeled all Pod subsystems including structural, braking, and power systems
-                                            </div>
-                                        </div>
-                                    </div>
-                                    <div class="event">
-                                        <div class="content">
-                                            <div class="summary">
-                                                Recruited team of ten students to work on controls and software
-                                            </div>
-                                        </div>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-                        <div class="card wow flipInY data-wow-delay=".25s">
-                            <div class="content">
-                                <div class="header">Hackathons</div>
-                                <div class="meta">
-                                    <span class="right floated time">2015</span>
-                                    <span class="category">Placed 1st</span>
-                                </div>
-                            </div>
-                            <div class="content">
-                                <div class="ui small feed">
-                                    <div class="event">
-                                        <div class="content">
-                                            <div class="summary">
-                                                Dragon Hacks 2016: Developed Android controlled drink dispenser
-                                            </div>
-                                        </div>
-                                    </div>
-                                    <div class="event">
-                                        <div class="content">
-                                            <div class="summary">
-                                                Dragon Hacks 2015: Demostrated Google Glass and Myo controlled quadcopter
-                                            </div>
-                                        </div>
-                                    </div>
-                                    <div class="event">
-                                        <div class="content">
-                                            <div class="summary">
-                                                Penn Apps 2015: Designed and helped build quadcopter Classic Pong
-                                            </div>
-                                        </div>
-                                    </div>
-
-
-                                </div>
-                            </div>
-                        </div>
-
-                        <div class="card wow flipInY data-wow-delay=".5s">
-                            <div class="content">
-                                <div class="header">Side Projects and Research</div>
-                                <div class="meta">
-                                    <span class="right floated time">Lastest three</span>
-                                    <span class="category"></span>
-                                </div>
-                            </div>
-                            <div class="content">
-                                <div class="ui small feed">
-                                    <div class="event">
-                                        <div class="content">
-                                            <div class="summary">
-                                                Stabilizing (ski) videos programmatically using Python and OpenCV. 
-                                            </div>
-                                        </div>
-                                    </div>
-                                    <div class="event">
-                                        <div class="content">
-                                            <div class="summary">
-                                                Performance analysis of Fizz-Buzz solutions using different techniques such as neural networks, cause why not :p
-                                            </div>
-                                        </div>
-                                    </div>
-                                    <div class="event">
-                                        <div class="content">
-                                            <div class="summary">
-                                                Localization of IMU data without ground truth using machine learning. Contact for paper.
-                                            </div>
-                                        </div>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-                <div class="six wide right floated column wow bounceInRight">
-                    <img class="ui large rounded image" src="images/robot.gif">
-                </div>
+        <div class="job">
+          <div class="job-header">
+            <div>
+              <span class="company">Fireflies</span><span class="company-note"> — now <a href="https://fireflies.ai" target="_blank" rel="noopener">Fireflies.ai</a></span>
             </div>
+            <span class="dates">2014 – 2016</span>
+          </div>
+          <ul class="roles">
+            <li>Co-founder</li>
+          </ul>
+          <ul class="highlights">
+            <li>Co-founded with Sam Udotong and Krish Ramineni</li>
+            <li>Left to complete degree at Drexel University</li>
+          </ul>
         </div>
-    </div>
 
+      </section>
 
-
-    <div id="blog" class="ui vertical inverted stripe segment">
-        <div class="ui middle aligned stackable grid container">
-            <div class="row">
-                <div class="six wide column wow bounce data-wow-delay=".5s"">
-                    <script async src="https://static.medium.com/embed.js"></script><a class="m-profile" href="https://medium.com/@om23">Om Mahida</a>
-                </div>
-                <div class="eight wide right floated column wow flipInX">
-                    <h3 class="ui inverted header">Blog</h3>
-                    <p>I started writing last year about things I experience or find interesting. My articles range from writing about technology to historical events. Feel free to ping me if you want to chat :)</p>
-
-                    <br/>
-                    <br/>
-
-                    <div class="ui inverted three statistics">
-                        <div class="statistic">
-                            <div class="value">
-                                1,368
-                            </div>
-                            <div class="label">
-                                Readers
-                            </div>
-                        </div>
-                        <div class="statistic">
-                            <div class="value">
-                                16
-                            </div>
-                            <div class="label">
-                                Recommendations
-                            </div>
-                        </div>
-                        <div class="statistic">
-                            <div class="value">
-                                4
-                            </div>
-                            <div class="label">
-                                Stories
-                            </div>
-                        </div>
-                    </div>
-                </div>
+      <section id="skills">
+        <h2>What I Work With</h2>
+        <div class="skills-grid">
+          <div class="skill-group">
+            <h3>Product</h3>
+            <div class="tags">
+              <span>0-to-1</span>
+              <span>Product Vision</span>
+              <span>Roadmapping</span>
+              <span>OKRs</span>
+              <span>GTM Strategy</span>
+              <span>Pricing</span>
             </div>
-        </div>
-    </div>
-
-
-
-    <div id="fun" class="ui vertical stripe segment">
-        <div class="ui middle aligned stackable grid container">
-            <div class="row">
-                <div class="eight wide column wow lightSpeedIn">
-                    <h3 class="ui header wow hinge">Fun</h3>
-                    <p>Avid skier, reader, food/beer/wine explorer, and an advocate for a more open government.</p>
-                </div>
-                <div class="six wide right floated center aligned column wow lightSpeedIn">
-                    <img src="images/skiing.jpg" class="ui large rounded image">
-                    <span>Credit to Artemis</span>
-                </div>
+          </div>
+          <div class="skill-group">
+            <h3>AI / Technical</h3>
+            <div class="tags">
+              <span>LLM Integration</span>
+              <span>RAG</span>
+              <span>Context Engineering</span>
+              <span>Claude Code</span>
+              <span>Python</span>
+              <span>JavaScript</span>
+              <span>SQL</span>
+              <span>Git</span>
             </div>
+          </div>
+          <div class="skill-group">
+            <h3>Domain</h3>
+            <div class="tags">
+              <span>Cybersecurity</span>
+              <span>Regulatory Compliance</span>
+              <span>Developer Tools</span>
+              <span>B2B SaaS</span>
+            </div>
+          </div>
         </div>
-    </div>
+      </section>
 
+      <section id="education">
+        <h2>Education</h2>
+        <ul class="edu-list">
+          <li>
+            <span class="edu-school">Drexel University</span>
+            <span class="edu-detail">B.S. Computer Engineering · 2017</span>
+          </li>
+          <li>
+            <span class="edu-school">Reforge</span>
+            <span class="edu-detail">Mastering Product Management · 2023</span>
+          </li>
+          <li>
+            <span class="edu-school">Stanford CPD</span>
+            <span class="edu-detail">Product Management · 2020</span>
+          </li>
+        </ul>
+      </section>
 
+    </main>
 
-	<div class="ui inverted vertical footer segment">
-		<div class="ui container">
-			<div class="ui stackable inverted divided equal height stackable grid">
-				<div class="three wide column">
-					<h4 class="ui inverted header">Contact Me</h4>
-					<div class="ui inverted link list">
-						<a href="mailto:ommahida@gmail.com" class="item">Email</a>
-						<a href="https://github.com/om23" class="item">Github</a>
-						<a href="https://linkedin.com/in/ommahida" class="item">LinkedIn</a>
-						<a href="https://devpost.com/om23" class="item">Dev Post</a>
-					</div>
-				</div>
-				<div class="three wide column">
-					<h4 class="ui inverted header">Random</h4>
-					<div class="ui inverted link list">
-                        <a href="resumeMahida.pdf" class="item">Resume</a>
-                        <a href="https://github.com/om23/om23.github.io" class="item">Source available here</a>
-                    </div>
-				</div>
-				<div class="seven wide column">
-					<h4 class="ui inverted header">Made in Philly with <i class="red heartbeat icon"></i></h4>
-                    <div class="ui inverted link list">
-                        <a class="item">Website build by Om Mahida</a>
-                        <a href="https://semantic-ui.com" class="item">Libraries Used: Semantic-UI, annimate.css, Typed.js, WOW.js</a>
-                    </div>
-				</div>
-			</div>
-		</div>
-	</div>
-</div>
+    <footer>
+      <div class="footer-links">
+        <a href="mailto:ommahida@gmail.com">ommahida@gmail.com</a>
+        <a href="https://linkedin.com/in/ommahida" target="_blank" rel="noopener">LinkedIn</a>
+        <a href="https://github.com/om23" target="_blank" rel="noopener">GitHub</a>
+      </div>
+    </footer>
 
-<script>
-    $(function(){
-        new WOW().init();
-    });
-</script>
-
+  </div>
 </body>
-
-<script>
-    $(function(){
-        $(".intro").typed({
-            strings: ["LIFELONG STUDENT", "SOFTWARE + HARDWARE ENGINEER", "SKIER", "STUDENT + ENGINEER + SKIER"],
-            typeSpeed: 1
-        });
-    });
-</script>
-
 </html>
