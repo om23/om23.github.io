@@ -3,9 +3,9 @@
   --text-muted: #64748b;
   --accent: #2563eb;
   --border: #e2e8f0;
-  --tag-bg: #f1f5f9;
   --font: 'Inter', system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
-  --width: 680px;
+  --mono: 'Space Mono', 'Courier New', monospace;
+  --width: 720px;
   --pad-x: 24px;
 }
 
@@ -22,7 +22,9 @@ html {
 body {
   font-family: var(--font);
   color: var(--text);
-  background: #fff;
+  background-color: #fff;
+  background-image: radial-gradient(circle, rgba(15, 23, 42, 0.1) 1px, transparent 1px);
+  background-size: 28px 28px;
   line-height: 1.6;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
@@ -46,11 +48,22 @@ a:hover {
 /* Header */
 
 header {
-  padding: 56px 0 0;
+  padding: 52px 0 44px;
+  border-bottom: 1px solid var(--border);
+}
+
+.header-ref {
+  font-family: var(--mono);
+  font-size: 0.625rem;
+  color: var(--text-muted);
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  margin-bottom: 24px;
+  opacity: 0.7;
 }
 
 header h1 {
-  font-size: 2.25rem;
+  font-size: 2.5rem;
   font-weight: 700;
   letter-spacing: -0.03em;
   line-height: 1.1;
@@ -58,7 +71,7 @@ header h1 {
 }
 
 .tagline {
-  margin-top: 12px;
+  margin-top: 10px;
   font-size: 1.0625rem;
   font-weight: 400;
   color: var(--text-muted);
@@ -89,26 +102,44 @@ header h1 {
   text-decoration: none;
 }
 
-/* Sections */
+/* Section headers */
 
 section {
-  margin-top: 64px;
+  margin-top: 56px;
 }
 
 section h2 {
+  display: flex;
+  align-items: center;
+  gap: 12px;
   font-size: 0.6875rem;
   font-weight: 600;
   letter-spacing: 0.1em;
   text-transform: uppercase;
   color: var(--text-muted);
-  margin-bottom: 24px;
+  margin-bottom: 28px;
+}
+
+section h2::after {
+  content: '';
+  flex: 1;
+  height: 1px;
+  background: var(--border);
+}
+
+.num {
+  font-family: var(--mono);
+  font-size: 0.625rem;
+  color: var(--accent);
+  letter-spacing: 0.05em;
+  flex-shrink: 0;
 }
 
 /* About */
 
 #about p {
   font-size: 0.9375rem;
-  line-height: 1.75;
+  line-height: 1.8;
   color: var(--text);
 }
 
@@ -155,14 +186,15 @@ section h2 {
 }
 
 .dates {
-  font-size: 0.8125rem;
+  font-family: var(--mono);
+  font-size: 0.75rem;
   color: var(--text-muted);
   white-space: nowrap;
 }
 
 .roles {
   list-style: none;
-  margin-top: 8px;
+  margin-top: 10px;
 }
 
 .roles li {
@@ -175,7 +207,8 @@ section h2 {
 }
 
 .role-dates {
-  font-size: 0.8125rem;
+  font-family: var(--mono);
+  font-size: 0.6875rem;
   color: #94a3b8;
 }
 
@@ -197,7 +230,33 @@ section h2 {
   position: absolute;
   left: 0;
   color: var(--text-muted);
-  font-weight: 300;
+}
+
+/* Beliefs */
+
+.beliefs {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.belief {
+  border-left: 2px solid var(--accent);
+  padding: 16px 0 16px 24px;
+}
+
+.belief p {
+  font-size: 1.0625rem;
+  line-height: 1.7;
+  color: var(--text);
+}
+
+/* Outside of Work */
+
+#outside p {
+  font-size: 0.9375rem;
+  line-height: 1.8;
+  color: var(--text);
 }
 
 /* Skills */
@@ -209,10 +268,13 @@ section h2 {
 }
 
 .skill-group h3 {
-  font-size: 0.8125rem;
-  font-weight: 600;
-  color: var(--text);
-  margin-bottom: 10px;
+  font-family: var(--mono);
+  font-size: 0.6875rem;
+  font-weight: 400;
+  color: var(--text-muted);
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  margin-bottom: 12px;
 }
 
 .tags {
@@ -224,10 +286,11 @@ section h2 {
 .tags span {
   font-size: 0.75rem;
   font-weight: 500;
-  background: var(--tag-bg);
+  background: transparent;
   color: var(--text);
   padding: 3px 9px;
   border-radius: 3px;
+  border: 1px solid var(--border);
 }
 
 /* Education */
@@ -263,8 +326,8 @@ section h2 {
 /* Footer */
 
 footer {
-  margin-top: 64px;
-  padding: 40px 0 56px;
+  margin-top: 56px;
+  padding: 36px 0 52px;
   border-top: 1px solid var(--border);
 }
 
@@ -293,7 +356,7 @@ footer {
   }
 
   header h1 {
-    font-size: 1.75rem;
+    font-size: 1.875rem;
   }
 
   .tagline {
@@ -301,7 +364,7 @@ footer {
   }
 
   section {
-    margin-top: 48px;
+    margin-top: 44px;
   }
 
   .skills-grid {
@@ -321,5 +384,9 @@ footer {
   .edu-list li {
     flex-direction: column;
     gap: 2px;
+  }
+
+  .belief p {
+    font-size: 1rem;
   }
 }
