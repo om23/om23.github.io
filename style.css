@@ -241,6 +241,49 @@ section h2::after {
   color: var(--text-muted);
 }
 
+/* Projects */
+
+.project {
+  padding: 20px 0;
+  border-bottom: 1px solid var(--border);
+}
+
+.project:last-child {
+  border-bottom: none;
+}
+
+.project-header {
+  display: flex;
+  align-items: baseline;
+  gap: 14px;
+  flex-wrap: wrap;
+}
+
+.project-name {
+  font-size: 1rem;
+  font-weight: 600;
+  color: var(--text);
+}
+
+.project-name:hover {
+  color: var(--accent);
+  text-decoration: none;
+}
+
+.project-tag {
+  font-family: var(--mono);
+  font-size: 0.6875rem;
+  color: var(--text-muted);
+  letter-spacing: 0.04em;
+}
+
+.project-desc {
+  margin-top: 8px;
+  font-size: 0.9375rem;
+  line-height: 1.7;
+  color: var(--text-muted);
+}
+
 /* Beliefs */
 
 .beliefs {
