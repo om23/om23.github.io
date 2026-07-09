@@ -27,10 +27,13 @@ class ReplyView(context: Context) : View(context) {
     // invalidates everything in flight without touching other views' handlers.
     private var generation = 0
 
+    /** Where the top of the reply wants to sit (view Y); < 0 means the default upper-page spot. */
+    private var anchorY = -1f
+
     private val textPaint = TextPaint(TextPaint.ANTI_ALIAS_FLAG).apply {
         color = Color.BLACK
         textSize = TypedValue.applyDimension(
-            TypedValue.COMPLEX_UNIT_SP, 30f, context.resources.displayMetrics
+            TypedValue.COMPLEX_UNIT_SP, 40f, context.resources.displayMetrics
         )
         // resources.getFont is API 26+; both Supernote generations qualify (A5X/A6X
         // run Android 8.1 / API 27, Nomad and Manta run Android 11 / API 30).
@@ -41,8 +44,10 @@ class ReplyView(context: Context) : View(context) {
         } ?: Typeface.create("cursive", Typeface.NORMAL)
     }
 
-    fun reveal(text: String) {
+    /** @param belowY ink bottom in view coordinates; the reply starts just under it. */
+    fun reveal(text: String, belowY: Float = -1f) {
         generation++
+        anchorY = if (belowY >= 0) belowY + GAP else -1f
         words = text.trim().split(Regex("\\s+")).filter { it.isNotEmpty() }
         visibleWords = 0
         textAlpha = 255
@@ -105,8 +110,14 @@ class ReplyView(context: Context) : View(context) {
         super.onDraw(canvas)
         val l = layout ?: return
         textPaint.alpha = textAlpha
+        // Start under the writing when we know where it was, but keep the whole
+        // reply on the page even if the writer filled the bottom of it.
+        val desired = if (anchorY >= 0) anchorY else height * 0.12f
+        val top = desired
+            .coerceAtMost((height - l.height - MARGIN).toFloat())
+            .coerceAtLeast(MARGIN.toFloat())
         canvas.save()
-        canvas.translate(MARGIN.toFloat(), height * 0.12f)
+        canvas.translate(MARGIN.toFloat(), top)
         l.draw(canvas)
         canvas.restore()
     }
@@ -116,5 +127,6 @@ class ReplyView(context: Context) : View(context) {
         const val HOLD_MS = 16_000L
         const val FADE_STEP_MS = 400L
         const val MARGIN = 72
+        const val GAP = 48f
     }
 }

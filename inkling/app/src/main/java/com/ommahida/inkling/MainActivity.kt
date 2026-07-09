@@ -97,9 +97,9 @@ class MainActivity : Activity() {
                 history.add(turn.transcription to turn.reply)
                 // The diary only remembers so much; keep the recent thread of conversation.
                 while (history.size > 12) history.removeAt(0)
-                replyView.reveal(turn.reply)
+                replyView.reveal(turn.reply, inkView.lastInkBottom)
             } else {
-                replyView.reveal(getString(R.string.reply_error))
+                replyView.reveal(getString(R.string.reply_error), inkView.lastInkBottom)
             }
         }
     }

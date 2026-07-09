@@ -209,6 +209,10 @@ class InkView(context: Context) : View(context) {
         for (stroke in strokes) canvas.drawPath(stroke.path, paint)
     }
 
+    /** Bottom edge of the most recently exported ink, in view coordinates (-1 when none). */
+    var lastInkBottom = -1f
+        private set
+
     /** Render the current ink onto a white bitmap, cropped to the writing plus a margin. */
     fun exportInk(): Bitmap? {
         if (strokes.isEmpty()) return null
@@ -218,6 +222,7 @@ class InkView(context: Context) : View(context) {
             stroke.path.computeBounds(strokeBounds, true)
             bounds.union(strokeBounds)
         }
+        lastInkBottom = bounds.bottom
         bounds.inset(-PAD, -PAD)
         bounds.intersect(0f, 0f, width.toFloat(), height.toFloat())
         val w = max(1f, bounds.width())
