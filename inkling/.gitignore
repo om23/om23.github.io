@@ -1,0 +1,9 @@
+.gradle/
+build/
+# downloaded at build time by the downloadReplyFont task
+app/src/main/res/font/
+local.properties
+.idea/
+*.iml
+captures/
+.DS_Store

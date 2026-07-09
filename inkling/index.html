@@ -1,0 +1,182 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="description" content="Inkling — an AI diary for Supernote e-ink tablets. Write with your pen; the page drinks your ink and answers in a flowing hand.">
+  <meta property="og:title" content="Inkling — an AI diary for Supernote">
+  <meta property="og:description" content="Write with your pen; the page drinks your ink and answers in a flowing hand.">
+  <meta property="og:type" content="website">
+  <meta property="og:url" content="https://ommahida.com/inkling/">
+  <title>Inkling — an AI diary for Supernote · Om Mahida</title>
+  <link rel="icon" type="image/x-icon" href="../images/favicon.ico">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Space+Mono&family=Dancing+Script:wght@500&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="../style.css">
+  <style>
+    .page-demo {
+      border: 1px solid var(--border);
+      border-radius: 6px;
+      background: #fff;
+      padding: 36px 32px;
+      margin: 8px 0 4px;
+      box-shadow: 0 1px 3px rgba(15, 23, 42, 0.06);
+    }
+    .page-demo .written {
+      font-family: 'Dancing Script', cursive;
+      font-size: 1.375rem;
+      color: #94a3b8;
+      margin-bottom: 18px;
+    }
+    .page-demo .answered {
+      font-family: 'Dancing Script', cursive;
+      font-size: 1.375rem;
+      color: var(--text);
+    }
+    .demo-caption {
+      font-family: var(--mono);
+      font-size: 0.6875rem;
+      color: var(--text-muted);
+      margin-bottom: 32px;
+    }
+    .gesture-table {
+      width: 100%;
+      border-collapse: collapse;
+      font-size: 0.9375rem;
+    }
+    .gesture-table td {
+      padding: 10px 16px 10px 0;
+      border-bottom: 1px solid var(--border);
+      vertical-align: top;
+    }
+    .gesture-table tr:last-child td { border-bottom: none; }
+    .gesture-table td:first-child {
+      font-weight: 600;
+      white-space: nowrap;
+      width: 40%;
+    }
+    .gesture-table td:last-child { color: var(--text-muted); }
+    pre.snippet {
+      background: #f8fafc;
+      border: 1px solid var(--border);
+      border-radius: 4px;
+      padding: 16px 20px;
+      font-family: var(--mono);
+      font-size: 0.8125rem;
+      overflow-x: auto;
+      line-height: 1.7;
+    }
+    .back-link {
+      font-family: var(--mono);
+      font-size: 0.75rem;
+      color: var(--text-muted);
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+
+    <header>
+      <div class="header-ref"><a class="back-link" href="../index.html">← ommahida.com</a> · projects</div>
+      <h1>Inkling</h1>
+      <p class="tagline">An AI diary for Supernote. Write with your pen; the page drinks your ink and answers in a flowing hand.</p>
+      <p class="meta">
+        <span>Kotlin · Android · Claude</span>
+        <span class="sep">·</span>
+        <a href="https://github.com/om23/om23.github.io/tree/master/inkling" target="_blank" rel="noopener">Source</a>
+        <span class="sep">·</span>
+        <a href="https://github.com/MaximeRivest/Riddle" target="_blank" rel="noopener">Inspired by Riddle</a>
+      </p>
+    </header>
+
+    <main>
+
+      <section>
+        <h2><span class="num">01</span>The Idea</h2>
+        <p style="font-size: 0.9375rem; line-height: 1.8; margin-bottom: 24px;">
+          <a href="https://github.com/MaximeRivest/Riddle" target="_blank" rel="noopener">Riddle</a>, by Maxime Rivest,
+          turns a reMarkable Paper Pro into Tom Riddle's diary: you handwrite on the page, the ink fades away, and an
+          answer appears in elegant script — then vanishes too. I wanted the same thing on the tablet I actually carry,
+          a Supernote. Inkling is that port.
+        </p>
+        <div class="page-demo">
+          <div class="written">my name is Om. what are you?</div>
+          <div class="answered">Hello, Om. I am the space between your thoughts and the paper. Write, and I will listen.</div>
+        </div>
+        <p class="demo-caption">what an exchange looks like on the page — your ink fades, the answer writes itself in</p>
+      </section>
+
+      <section>
+        <h2><span class="num">02</span>Two Very Different Tablets</h2>
+        <p style="font-size: 0.9375rem; line-height: 1.8;">
+          The reMarkable runs Linux with root SSH access, so Riddle is a Rust binary reading pen input from raw
+          <code>evdev</code> and drawing through the vendor's e-ink engine. Supernote devices run Android and support
+          sideloading — no root, no raw input devices, but a full app runtime. So Inkling is a small Kotlin app:
+          a custom view captures stylus strokes, renders them to an image when the pen rests, and a vision model
+          reads the handwriting directly off the page. No handwriting-recognition engine anywhere — the same trick
+          Riddle uses, translated to a different stack.
+        </p>
+      </section>
+
+      <section>
+        <h2><span class="num">03</span>Gestures</h2>
+        <table class="gesture-table">
+          <tr><td>Write, then rest the pen</td><td>the diary reads your ink and answers</td></tr>
+          <tr><td>Pen's eraser end</td><td>unwrite strokes</td></tr>
+          <tr><td>Draw only a “?”</td><td>the diary explains itself</td></tr>
+          <tr><td>Two-finger hold</td><td>settings — API key, model, persona</td></tr>
+        </table>
+      </section>
+
+      <section>
+        <h2><span class="num">04</span>How It Works</h2>
+        <p style="font-size: 0.9375rem; line-height: 1.8; margin-bottom: 16px;">
+          Three small pieces. <strong>InkView</strong> captures stylus strokes and runs a rest-timer; when the pen has
+          been still for ~2.5 seconds it crops the writing to a PNG. <strong>Oracle</strong> sends that image to Claude
+          through the official Anthropic Java SDK — one structured-output call returns both a transcription and the
+          diary's reply, and the transcriptions become lightweight session memory so the diary remembers the
+          conversation without resending images. <strong>ReplyView</strong> inks the reply back word by word in
+          Dancing Script, holds it long enough to read, and fades it out in stepped gray levels — discrete steps
+          read far better on e-ink than smooth animation.
+        </p>
+        <pre class="snippet">pen rests → ink fades → PNG → Claude reads the handwriting
+       → { transcription, reply } → reply written back in script → fades</pre>
+      </section>
+
+      <section>
+        <h2><span class="num">05</span>Build &amp; Install</h2>
+        <p style="font-size: 0.9375rem; line-height: 1.8; margin-bottom: 16px;">
+          Kotlin + Gradle, no Android Studio required. Build the APK, sideload it onto a Supernote
+          (Nomad and Manta support official sideloading; the original A5X/A6X need ADB), then two-finger hold
+          to add your Anthropic API key. The key lives only on the device. The app targets <code>minSdk 27</code>
+          and is verified to compile against the Android 8.1 framework the original models run.
+        </p>
+        <pre class="snippet">gradle wrapper && ./gradlew assembleRelease
+adb install app/build/outputs/apk/release/app-release.apk</pre>
+        <p style="font-size: 0.9375rem; line-height: 1.8; margin-top: 16px;">
+          Full instructions in the <a href="https://github.com/om23/om23.github.io/tree/master/inkling" target="_blank" rel="noopener">README</a>.
+        </p>
+      </section>
+
+      <section>
+        <h2><span class="num">06</span>Credits</h2>
+        <p style="font-size: 0.9375rem; line-height: 1.8;">
+          Concept and soul: <a href="https://github.com/MaximeRivest/Riddle" target="_blank" rel="noopener">Riddle</a> by
+          Maxime Rivest. Reply typeface: <a href="https://github.com/googlefonts/DancingScript" target="_blank" rel="noopener">Dancing Script</a>
+          (SIL Open Font License). Built with <a href="https://claude.com/claude-code" target="_blank" rel="noopener">Claude Code</a>.
+        </p>
+      </section>
+
+    </main>
+
+    <footer>
+      <div class="footer-links">
+        <a href="../index.html">← ommahida.com</a>
+        <a href="https://github.com/om23/om23.github.io/tree/master/inkling" target="_blank" rel="noopener">Source</a>
+      </div>
+    </footer>
+
+  </div>
+</body>
+</html>
