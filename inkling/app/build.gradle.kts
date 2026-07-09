@@ -1,6 +1,19 @@
+import java.util.Properties
+
 plugins {
     id("com.android.application")
     id("org.jetbrains.kotlin.android")
+}
+
+// Personal-build convenience: bake an API key into the APK so it never has to be
+// typed on the device. Set `inkling.apiKey=sk-ant-...` in local.properties (gitignored)
+// or export INKLING_API_KEY before building. Anyone holding the APK can extract the
+// key — only do this for builds that stay on your own device.
+val builtInApiKey: String = run {
+    val props = Properties()
+    val local = rootProject.file("local.properties")
+    if (local.exists()) local.inputStream().use { props.load(it) }
+    props.getProperty("inkling.apiKey") ?: System.getenv("INKLING_API_KEY") ?: ""
 }
 
 android {
@@ -14,6 +27,12 @@ android {
         targetSdk = 34
         versionCode = 1
         versionName = "0.1.0"
+
+        buildConfigField("String", "BUILT_IN_API_KEY", "\"$builtInApiKey\"")
+    }
+
+    buildFeatures {
+        buildConfig = true
     }
 
     buildTypes {

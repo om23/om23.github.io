@@ -63,6 +63,21 @@ gradle wrapper            # once, to generate the wrapper
 The APK lands in `app/build/outputs/apk/`. The Dancing Script typeface is downloaded
 automatically on first build (it's OFL-licensed; the repo carries no binaries).
 
+### Baking in your API key (recommended for personal builds)
+
+Typing an API key on an e-ink tablet is miserable. Instead, add it to `local.properties`
+(gitignored) before building:
+
+```
+sdk.dir=/path/to/android/sdk
+inkling.apiKey=sk-ant-...
+```
+
+The key is compiled into the APK, so the app works immediately after install — no on-device
+setup. A key entered in the settings drawer still overrides it. **Anyone who has the APK file
+can extract a baked-in key**, so only do this for builds that stay on your own device, and
+consider putting a spend limit on the key in the Anthropic console.
+
 ## Installing on a Supernote
 
 1. Enable sideloading on the device (Nomad/Manta): **Settings → Security → Install unknown apps**

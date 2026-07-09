@@ -6,8 +6,9 @@ class Config(context: Context) {
 
     private val prefs = context.getSharedPreferences("inkling", Context.MODE_PRIVATE)
 
+    /** A key entered in settings wins; otherwise fall back to the one baked in at build time. */
     var apiKey: String
-        get() = prefs.getString(KEY_API, "") ?: ""
+        get() = (prefs.getString(KEY_API, "") ?: "").ifEmpty { BuildConfig.BUILT_IN_API_KEY }
         set(value) = prefs.edit().putString(KEY_API, value.trim()).apply()
 
     var model: String
