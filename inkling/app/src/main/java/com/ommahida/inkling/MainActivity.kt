@@ -6,6 +6,7 @@ import android.graphics.Bitmap
 import android.graphics.Color
 import android.graphics.Typeface
 import android.os.Bundle
+import android.util.Log
 import android.view.Gravity
 import android.view.WindowManager
 import android.widget.FrameLayout
@@ -83,7 +84,10 @@ class MainActivity : Activity() {
         scope.launch {
             val turn = try {
                 withContext(Dispatchers.IO) { oracle.consult(ink, history.toList()) }
-            } catch (e: Exception) {
+            } catch (t: Throwable) {
+                // Throwable, not Exception: a NoSuchMethodError from a library on old
+                // Android must degrade to the error reply, not kill the diary.
+                Log.e("Inkling", "consult failed", t)
                 null
             }
             consulting = false

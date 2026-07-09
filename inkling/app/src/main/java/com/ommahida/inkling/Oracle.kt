@@ -3,14 +3,17 @@ package com.ommahida.inkling
 import android.graphics.Bitmap
 import com.anthropic.client.AnthropicClient
 import com.anthropic.client.okhttp.AnthropicOkHttpClient
+import com.anthropic.core.JsonValue
 import com.anthropic.models.messages.Base64ImageSource
 import com.anthropic.models.messages.ContentBlockParam
 import com.anthropic.models.messages.ImageBlockParam
+import com.anthropic.models.messages.JsonOutputFormat
 import com.anthropic.models.messages.MessageCreateParams
 import com.anthropic.models.messages.MessageParam
 import com.anthropic.models.messages.Model
-import com.anthropic.models.messages.StructuredMessageCreateParams
+import com.anthropic.models.messages.OutputConfig
 import com.anthropic.models.messages.TextBlockParam
+import org.json.JSONObject
 import java.io.ByteArrayOutputStream
 import java.time.Duration
 import java.util.Base64
@@ -48,25 +51,57 @@ class Oracle(private val config: Config) {
         val params = buildParams(config.model, config.persona, png, history)
         val message = client().messages().create(params)
 
-        var turn: DiaryTurn? = null
+        var text: String? = null
         for (block in message.content()) {
-            block.text().ifPresent { typed -> turn = typed.text() }
+            block.text().ifPresent { text = it.text() }
         }
-        return turn ?: throw IllegalStateException(
+        val body = text ?: throw IllegalStateException(
             "no answer in response (stop_reason=${message.stopReason()})"
+        )
+        val json = JSONObject(body)
+        return DiaryTurn(
+            transcription = json.optString("transcription"),
+            reply = json.getString("reply"),
         )
     }
 
     companion object {
         /**
-         * Pure request assembly — no Android types, so it is verifiable on a plain JVM.
+         * Hand-written response schema. The SDK's class-based schema derivation
+         * (outputConfig(Class)) needs Method.getAnnotatedReturnType(), which Android
+         * only has from API 28 — the original A5X/A6X run API 27, so the schema is
+         * spelled out here and the reply parsed with Android's built-in org.json.
          */
+        private fun diaryOutputConfig(): OutputConfig {
+            val schema = mapOf(
+                "type" to "object",
+                "properties" to mapOf(
+                    "transcription" to mapOf(
+                        "type" to "string",
+                        "description" to "The handwriting in the image, transcribed exactly as written",
+                    ),
+                    "reply" to mapOf(
+                        "type" to "string",
+                        "description" to "The diary's reply, at most sixty words",
+                    ),
+                ),
+                "required" to listOf("transcription", "reply"),
+                "additionalProperties" to false,
+            )
+            val formatSchema = JsonOutputFormat.Schema.builder()
+            for ((k, v) in schema) formatSchema.putAdditionalProperty(k, JsonValue.from(v))
+            return OutputConfig.builder()
+                .format(JsonOutputFormat.builder().schema(formatSchema.build()).build())
+                .build()
+        }
+
+        /** Pure request assembly — no Android UI types, no reflection. */
         fun buildParams(
             model: String,
             persona: String,
             png: ByteArray,
             history: List<Pair<String, String>>,
-        ): StructuredMessageCreateParams<DiaryTurn> {
+        ): MessageCreateParams {
             val imageBlock = ImageBlockParam.builder()
                 .source(
                     Base64ImageSource.builder()
@@ -80,6 +115,7 @@ class Oracle(private val config: Config) {
                 .model(Model.of(model))
                 .maxTokens(1024L)
                 .system(persona)
+                .outputConfig(diaryOutputConfig())
 
             for ((written, said) in history) {
                 builder.addUserMessage("(handwritten) $written")
@@ -102,7 +138,7 @@ class Oracle(private val config: Config) {
                 )
             )
 
-            return builder.outputConfig(DiaryTurn::class.java).build()
+            return builder.build()
         }
     }
 }
