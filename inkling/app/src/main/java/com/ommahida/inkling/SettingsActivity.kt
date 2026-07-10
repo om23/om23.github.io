@@ -4,10 +4,12 @@ import android.app.Activity
 import android.graphics.Color
 import android.os.Bundle
 import android.text.InputType
+import android.widget.ArrayAdapter
 import android.widget.Button
 import android.widget.EditText
 import android.widget.LinearLayout
 import android.widget.ScrollView
+import android.widget.Spinner
 import android.widget.TextView
 
 /**
@@ -42,12 +44,30 @@ class SettingsActivity : Activity() {
         column.addView(keyField)
 
         label("Model")
-        val modelField = EditText(this).apply {
-            inputType = InputType.TYPE_CLASS_TEXT
-            setText(config.model)
-            hint = Config.DEFAULT_MODEL
+        val modelIds = mutableListOf(
+            "claude-opus-4-8",
+            "claude-sonnet-5",
+            "claude-haiku-4-5",
+        )
+        val modelLabels = mutableListOf(
+            "Opus 4.8 — deepest voice, slower",
+            "Sonnet 5 — balanced",
+            "Haiku 4.5 — fastest",
+        )
+        // A model set some other way (rebuild, future import) still shows up as a choice.
+        if (config.model !in modelIds) {
+            modelIds.add(config.model)
+            modelLabels.add(config.model)
         }
-        column.addView(modelField)
+        val modelSpinner = Spinner(this).apply {
+            adapter = ArrayAdapter(
+                this@SettingsActivity,
+                android.R.layout.simple_spinner_item,
+                modelLabels,
+            ).apply { setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item) }
+            setSelection(modelIds.indexOf(config.model))
+        }
+        column.addView(modelSpinner)
 
         label("Persona (the diary's voice)")
         val personaField = EditText(this).apply {
@@ -61,7 +81,7 @@ class SettingsActivity : Activity() {
             text = "Save"
             setOnClickListener {
                 config.apiKey = keyField.text.toString()
-                config.model = modelField.text.toString()
+                config.model = modelIds[modelSpinner.selectedItemPosition]
                 config.persona = personaField.text.toString()
                 finish()
             }
