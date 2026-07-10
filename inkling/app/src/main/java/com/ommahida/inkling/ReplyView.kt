@@ -56,6 +56,30 @@ class ReplyView(context: Context) : View(context) {
         revealNext(generation)
     }
 
+    /**
+     * While the diary composes, pulse ink dots where the reply will appear so the
+     * wait reads as thinking rather than silence. Cancelled by the next [reveal].
+     */
+    fun showMusing(belowY: Float = -1f) {
+        generation++
+        anchorY = if (belowY >= 0) belowY + GAP else -1f
+        words = emptyList()
+        textAlpha = 255
+        layout = null
+        invalidate()
+        museNext(generation, 0)
+    }
+
+    private fun museNext(gen: Int, beat: Int) {
+        postDelayed({
+            if (gen != generation) return@postDelayed
+            val dots = beat % 3 + 1
+            layout = buildLayout("· ".repeat(dots).trim())
+            invalidate()
+            museNext(gen, beat + 1)
+        }, MUSE_MS)
+    }
+
     fun isShowing(): Boolean = words.isNotEmpty()
 
     /** Cut the reveal/hold short (e.g. the writer picked the pen back up). */
@@ -98,9 +122,12 @@ class ReplyView(context: Context) : View(context) {
     }
 
     private fun rebuildLayout() {
-        val visible = words.take(visibleWords).joinToString(" ")
+        layout = buildLayout(words.take(visibleWords).joinToString(" "))
+    }
+
+    private fun buildLayout(text: String): StaticLayout {
         val textWidth = (width - 2 * MARGIN).coerceAtLeast(100)
-        layout = StaticLayout.Builder.obtain(visible, 0, visible.length, textPaint, textWidth)
+        return StaticLayout.Builder.obtain(text, 0, text.length, textPaint, textWidth)
             .setAlignment(Layout.Alignment.ALIGN_NORMAL)
             .setLineSpacing(0f, 1.35f)
             .build()
@@ -128,5 +155,6 @@ class ReplyView(context: Context) : View(context) {
         const val FADE_STEP_MS = 400L
         const val MARGIN = 72
         const val GAP = 48f
+        const val MUSE_MS = 600L
     }
 }

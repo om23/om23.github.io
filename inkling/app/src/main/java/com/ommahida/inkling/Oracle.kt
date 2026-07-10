@@ -113,7 +113,7 @@ class Oracle(private val config: Config) {
 
             val builder = MessageCreateParams.builder()
                 .model(Model.of(model))
-                .maxTokens(1024L)
+                .maxTokens(400L)  // transcription + a ≤60-word reply; a tight cap bounds worst-case latency
                 .system(persona)
                 .outputConfig(diaryOutputConfig())
 

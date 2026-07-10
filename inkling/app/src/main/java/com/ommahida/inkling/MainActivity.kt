@@ -77,9 +77,9 @@ class MainActivity : Activity() {
 
         consulting = true
         inkView.restTimerEnabled = false
-        if (replyView.isShowing()) replyView.dismiss()
-        hint.text = getString(R.string.hint_thinking)
+        hint.text = ""
         inkView.fadeInk()
+        replyView.showMusing(inkView.lastInkBottom)
 
         scope.launch {
             val turn = try {

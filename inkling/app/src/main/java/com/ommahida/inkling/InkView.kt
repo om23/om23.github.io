@@ -272,6 +272,8 @@ class InkView(context: Context) : View(context) {
         const val ERASE_R = 28f
         const val PAD = 32f
         const val FADE_STEP_MS = 350L
-        const val MAX_EDGE = 1568f
+        // Long-edge cap for the exported snapshot: smaller uploads and roughly half
+        // the vision tokens vs 1568px, while handwriting stays comfortably legible.
+        const val MAX_EDGE = 1120f
     }
 }
