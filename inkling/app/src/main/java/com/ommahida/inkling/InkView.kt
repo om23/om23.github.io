@@ -6,23 +6,29 @@ import android.graphics.Canvas
 import android.graphics.Color
 import android.graphics.Paint
 import android.graphics.Path
+import android.graphics.PixelFormat
 import android.graphics.PointF
+import android.graphics.Rect
 import android.graphics.RectF
 import android.view.MotionEvent
-import android.view.View
+import android.view.SurfaceHolder
+import android.view.SurfaceView
 import kotlin.math.abs
+import kotlin.math.hypot
 import kotlin.math.max
 import kotlin.math.min
 
 /**
- * Full-page ink surface tuned for e-ink:
- *  - only the EMR stylus draws, so a resting wrist on the touch layer never inks;
- *  - strokes render into a backing bitmap and invalidate only the dirty rectangle,
- *    letting the e-ink controller run small, fast partial refreshes;
- *  - stylus events are delivered unbuffered, and segments are midpoint-smoothed.
+ * Full-page ink surface tuned for the lowest latency a sideloaded app can get:
+ *  - a SurfaceView, so fresh ink is pushed to the panel straight from the touch
+ *    handler — no invalidate, no choreographer, no view traversal;
+ *  - stylus events delivered unbuffered, segments midpoint-smoothed;
+ *  - a short velocity-based prediction tail drawn ahead of the pen and repaired
+ *    on the next sample, hiding another beat of pipeline delay;
+ *  - only the EMR stylus draws, so a resting wrist never inks.
  * Fires [onInkRested] once the pen has been still long enough.
  */
-class InkView(context: Context) : View(context) {
+class InkView(context: Context) : SurfaceView(context), SurfaceHolder.Callback {
 
     var onInkRested: ((Bitmap) -> Unit)? = null
     var onTwoFingerHold: (() -> Unit)? = null
@@ -38,12 +44,16 @@ class InkView(context: Context) : View(context) {
     private var lastY = 0f
     private var prevMidX = 0f
     private var prevMidY = 0f
+    private var lastT = 0L
+    private var velX = 0f
+    private var velY = 0f
 
-    /** Backing layer the live ink is drawn into; onDraw just blits it. */
+    /** Committed ink; the surface is repainted from this, prediction stays out of it. */
     private var inkBitmap: Bitmap? = null
-    private var inkCanvas: Canvas? = null
     private val bitmapPaint = Paint()
+    private var inkCanvas: Canvas? = null
     private var inkAlpha = 255
+    private var surfaceReady = false
 
     // Anti-aliasing buys nothing on a grayscale e-ink panel and costs rasterization time.
     private val paint = Paint().apply {
@@ -56,6 +66,14 @@ class InkView(context: Context) : View(context) {
 
     private val segmentPath = Path()
     private val dirty = RectF()
+    private val blitRect = Rect()
+    private val predicted = RectF()   // region holding last frame's prediction tail
+
+    init {
+        holder.addCallback(this)
+        // 16-bit is plenty for black ink on a grayscale panel and halves the bandwidth.
+        holder.setFormat(PixelFormat.RGB_565)
+    }
 
     private val restRunnable = Runnable {
         if (strokes.isNotEmpty() && restTimerEnabled) {
@@ -71,21 +89,52 @@ class InkView(context: Context) : View(context) {
 
     fun hasInk(): Boolean = strokes.isNotEmpty()
 
-    override fun onSizeChanged(w: Int, h: Int, oldw: Int, oldh: Int) {
-        super.onSizeChanged(w, h, oldw, oldh)
-        if (w <= 0 || h <= 0) return
-        inkBitmap = Bitmap.createBitmap(w, h, Bitmap.Config.ARGB_8888).also {
-            inkCanvas = Canvas(it)
-        }
-        redrawAll()
+    // ---- Surface lifecycle -------------------------------------------------
+
+    override fun surfaceCreated(holder: SurfaceHolder) {
+        surfaceReady = true
+        blitAll()
     }
 
-    override fun onDraw(canvas: Canvas) {
-        super.onDraw(canvas)
-        val bmp = inkBitmap ?: return
-        bitmapPaint.alpha = inkAlpha
-        canvas.drawBitmap(bmp, 0f, 0f, bitmapPaint)
+    override fun surfaceChanged(holder: SurfaceHolder, format: Int, width: Int, height: Int) {
+        if (width <= 0 || height <= 0) return
+        val bmp = inkBitmap
+        if (bmp == null || bmp.width != width || bmp.height != height) {
+            inkBitmap = Bitmap.createBitmap(width, height, Bitmap.Config.ARGB_8888).also {
+                inkCanvas = Canvas(it)
+            }
+            redrawAll()
+        }
+        blitAll()
     }
+
+    override fun surfaceDestroyed(holder: SurfaceHolder) {
+        surfaceReady = false
+    }
+
+    /** Repaint a region of the surface from the committed-ink bitmap. */
+    private fun blit(region: Rect, drawPrediction: Boolean = false, px: Float = 0f, py: Float = 0f) {
+        if (!surfaceReady) return
+        val canvas = holder.lockCanvas(region) ?: return
+        try {
+            // The system may expand the dirty region; repaint whatever we were given.
+            canvas.drawColor(Color.WHITE)
+            val bmp = inkBitmap
+            if (bmp != null) {
+                bitmapPaint.alpha = inkAlpha
+                canvas.drawBitmap(bmp, 0f, 0f, bitmapPaint)
+            }
+            if (drawPrediction) canvas.drawLine(lastX, lastY, px, py, paint)
+        } finally {
+            holder.unlockCanvasAndPost(canvas)
+        }
+    }
+
+    private fun blitAll() {
+        blit(Rect(0, 0, width, height))
+    }
+
+    // ---- Input -------------------------------------------------------------
 
     override fun onTouchEvent(event: MotionEvent): Boolean {
         val tool = event.getToolType(0)
@@ -123,14 +172,15 @@ class InkView(context: Context) : View(context) {
                 // Ask for stylus events as they happen instead of batched per frame.
                 requestUnbufferedDispatch(event)
                 removeCallbacks(restRunnable)
-                if (inkAlpha != 255) {
-                    inkAlpha = 255
-                    invalidate()
-                }
+                inkAlpha = 255
                 lastX = event.x
                 lastY = event.y
                 prevMidX = lastX
                 prevMidY = lastY
+                lastT = event.eventTime
+                velX = 0f
+                velY = 0f
+                predicted.setEmpty()
                 current = Stroke().also {
                     it.path.moveTo(lastX, lastY)
                     it.points.add(PointF(lastX, lastY))
@@ -140,20 +190,52 @@ class InkView(context: Context) : View(context) {
             MotionEvent.ACTION_MOVE -> {
                 val stroke = current ?: return true
                 dirty.setEmpty()
-                for (i in 0 until event.historySize) {
-                    appendSegment(stroke, event.getHistoricalX(i), event.getHistoricalY(i))
+                if (!predicted.isEmpty) {
+                    dirty.union(predicted)   // repair last frame's prediction tail
+                    predicted.setEmpty()
                 }
-                appendSegment(stroke, event.x, event.y)
+                for (i in 0 until event.historySize) {
+                    appendSegment(stroke, event.getHistoricalX(i), event.getHistoricalY(i),
+                        event.getHistoricalEventTime(i))
+                }
+                appendSegment(stroke, event.x, event.y, event.eventTime)
+
+                // Predict a short tail ahead of the pen from its current velocity.
+                var predX = lastX + velX * PREDICT_MS
+                var predY = lastY + velY * PREDICT_MS
+                val dist = hypot((predX - lastX).toDouble(), (predY - lastY).toDouble()).toFloat()
+                if (dist > PREDICT_MAX) {
+                    val s = PREDICT_MAX / dist
+                    predX = lastX + (predX - lastX) * s
+                    predY = lastY + (predY - lastY) * s
+                }
+                val hasPrediction = dist > 1f
+                if (hasPrediction) {
+                    predicted.set(min(lastX, predX), min(lastY, predY), max(lastX, predX), max(lastY, predY))
+                    dirty.union(predicted)
+                }
+
                 if (!dirty.isEmpty) {
                     val pad = (paint.strokeWidth + 4f).toInt()
-                    invalidate(
-                        (dirty.left.toInt() - pad), (dirty.top.toInt() - pad),
-                        (dirty.right.toInt() + pad), (dirty.bottom.toInt() + pad)
+                    blitRect.set(
+                        dirty.left.toInt() - pad, dirty.top.toInt() - pad,
+                        dirty.right.toInt() + pad, dirty.bottom.toInt() + pad
                     )
+                    blit(blitRect, hasPrediction, predX, predY)
                 }
             }
             MotionEvent.ACTION_UP, MotionEvent.ACTION_CANCEL -> {
                 current = null
+                if (!predicted.isEmpty) {
+                    // Erase the tail that ran ahead of where the pen actually lifted.
+                    val pad = (paint.strokeWidth + 4f).toInt()
+                    blitRect.set(
+                        predicted.left.toInt() - pad, predicted.top.toInt() - pad,
+                        predicted.right.toInt() + pad, predicted.bottom.toInt() + pad
+                    )
+                    predicted.setEmpty()
+                    blit(blitRect)
+                }
                 removeCallbacks(restRunnable)
                 postDelayed(restRunnable, REST_MS)
             }
@@ -162,11 +244,10 @@ class InkView(context: Context) : View(context) {
     }
 
     /**
-     * Midpoint-smoothed segment: curve from the previous midpoint to the new midpoint,
-     * using the last sample as the control point. Drawn incrementally into the backing
-     * bitmap and mirrored into the stroke's cumulative path for export/erase.
+     * Midpoint-smoothed segment committed into the backing bitmap; also updates
+     * the pen velocity estimate used for the prediction tail.
      */
-    private fun appendSegment(stroke: Stroke, x: Float, y: Float) {
+    private fun appendSegment(stroke: Stroke, x: Float, y: Float, t: Long) {
         val midX = (lastX + x) / 2f
         val midY = (lastY + y) / 2f
 
@@ -180,6 +261,14 @@ class InkView(context: Context) : View(context) {
 
         dirty.union(min(prevMidX, x), min(prevMidY, y))
         dirty.union(max(prevMidX, x), max(prevMidY, y))
+
+        val dt = (t - lastT).toFloat()
+        if (dt > 0f) {
+            // Light smoothing keeps the tail from whipping on noisy samples.
+            velX = 0.6f * ((x - lastX) / dt) + 0.4f * velX
+            velY = 0.6f * ((y - lastY) / dt) + 0.4f * velY
+        }
+        lastT = t
         prevMidX = midX
         prevMidY = midY
         lastX = x
@@ -197,7 +286,7 @@ class InkView(context: Context) : View(context) {
         strokes.removeAll { stroke -> stroke.points.any { abs(it.x - x) < ERASE_R && abs(it.y - y) < ERASE_R } }
         if (strokes.size != before) {
             redrawAll()
-            invalidate()
+            blitAll()
         }
         removeCallbacks(restRunnable)
     }
@@ -252,7 +341,7 @@ class InkView(context: Context) : View(context) {
                 } else {
                     inkAlpha = alpha
                 }
-                invalidate()
+                blitAll()
             }, FADE_STEP_MS * (i + 1))
         }
     }
@@ -262,7 +351,7 @@ class InkView(context: Context) : View(context) {
         strokes.clear()
         inkBitmap?.eraseColor(Color.TRANSPARENT)
         inkAlpha = 255
-        invalidate()
+        blitAll()
     }
 
     private companion object {
@@ -275,5 +364,8 @@ class InkView(context: Context) : View(context) {
         // Long-edge cap for the exported snapshot: smaller uploads and roughly half
         // the vision tokens vs 1568px, while handwriting stays comfortably legible.
         const val MAX_EDGE = 1120f
+        // Prediction tail: ~one event-batch of lead, capped so misprediction stays subtle.
+        const val PREDICT_MS = 20f
+        const val PREDICT_MAX = 24f
     }
 }

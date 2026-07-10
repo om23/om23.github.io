@@ -54,10 +54,12 @@ class MainActivity : Activity() {
             setPadding(48, 0, 48, 64)
         }
 
+        // InkView is a SurfaceView (renders behind the window through a punched hole),
+        // so the reply and hint must come after it to composite on top.
         val root = FrameLayout(this)
-        root.addView(replyView, FrameLayout.LayoutParams(
-            FrameLayout.LayoutParams.MATCH_PARENT, FrameLayout.LayoutParams.MATCH_PARENT))
         root.addView(inkView, FrameLayout.LayoutParams(
+            FrameLayout.LayoutParams.MATCH_PARENT, FrameLayout.LayoutParams.MATCH_PARENT))
+        root.addView(replyView, FrameLayout.LayoutParams(
             FrameLayout.LayoutParams.MATCH_PARENT, FrameLayout.LayoutParams.MATCH_PARENT))
         root.addView(hint, FrameLayout.LayoutParams(
             FrameLayout.LayoutParams.MATCH_PARENT, FrameLayout.LayoutParams.WRAP_CONTENT,
