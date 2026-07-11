@@ -34,6 +34,13 @@ class InkView(context: Context) : View(context) {
     /** While false, ink still renders but the rest-timer won't fire (e.g. mid-consultation). */
     var restTimerEnabled = true
 
+    /**
+     * When true, the firmware paints the wet ink on its EPD overlay, so this view does NOT draw
+     * strokes to the screen — it still records every point for the Claude snapshot and the export
+     * bitmap, but stays visually transparent so the firmware ink shows through.
+     */
+    var firmwareInkActive = false
+
     private class Stroke(val path: Path = Path(), val points: MutableList<PointF> = mutableListOf())
 
     private val strokes = mutableListOf<Stroke>()
@@ -95,6 +102,8 @@ class InkView(context: Context) : View(context) {
 
     override fun onDraw(canvas: Canvas) {
         super.onDraw(canvas)
+        // Firmware owns the visible ink; keep this view transparent so its overlay shows.
+        if (firmwareInkActive) return
         val bmp = inkBitmap ?: return
         bitmapPaint.alpha = inkAlpha
         canvas.drawBitmap(bmp, 0f, 0f, bitmapPaint)
@@ -168,6 +177,9 @@ class InkView(context: Context) : View(context) {
                         event.getHistoricalEventTime(i))
                 }
                 appendSegment(stroke, event.x, event.y, event.eventTime)
+
+                // Firmware draws the live ink; skip our own display work entirely.
+                if (firmwareInkActive) return true
 
                 // Predict a short tail ahead of the pen from its current velocity.
                 var px = lastX + velX * PREDICT_MS

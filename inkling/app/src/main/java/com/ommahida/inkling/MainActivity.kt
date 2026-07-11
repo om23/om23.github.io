@@ -22,6 +22,7 @@ class MainActivity : Activity() {
 
     private lateinit var config: Config
     private lateinit var oracle: Oracle
+    private lateinit var firmwareInk: FirmwareInk
     private lateinit var inkView: InkView
     private lateinit var replyView: ReplyView
     private lateinit var hint: TextView
@@ -38,6 +39,7 @@ class MainActivity : Activity() {
 
         config = Config(this)
         oracle = Oracle(config)
+        firmwareInk = FirmwareInk(this)
 
         inkView = InkView(this).apply {
             onInkRested = ::consultDiary
@@ -69,6 +71,15 @@ class MainActivity : Activity() {
         hint.text = getString(R.string.hint_first_run)
     }
 
+    override fun onWindowFocusChanged(hasFocus: Boolean) {
+        super.onWindowFocusChanged(hasFocus)
+        // The firmware resets pen ownership when focus changes, so (re)claim on every focus gain.
+        if (hasFocus) {
+            inkView.firmwareInkActive = firmwareInk.setup()
+            inkView.invalidate()
+        }
+    }
+
     private fun consultDiary(ink: Bitmap) {
         if (consulting) return
 
@@ -80,6 +91,7 @@ class MainActivity : Activity() {
         consulting = true
         inkView.restTimerEnabled = false
         hint.text = ""
+        firmwareInk.clearAll()   // the page drinks the firmware ink
         inkView.fadeInk()
         replyView.showMusing(inkView.lastInkBottom)
 
@@ -108,6 +120,7 @@ class MainActivity : Activity() {
 
     override fun onDestroy() {
         super.onDestroy()
+        firmwareInk.teardown()
         scope.cancel()
     }
 }
