@@ -65,6 +65,10 @@ class InkView(context: Context) : View(context) {
     private var predY = 0f
     private val predicted = RectF()
 
+    /** A snapshot of the just-written ink, fading out (the "page drinks your ink" dissolve). */
+    private var fadingBitmap: Bitmap? = null
+    private var fadeAlpha = 255
+
     // Anti-aliasing buys nothing on a grayscale e-ink panel and costs rasterization time.
     private val paint = Paint().apply {
         color = Color.BLACK
@@ -102,7 +106,12 @@ class InkView(context: Context) : View(context) {
 
     override fun onDraw(canvas: Canvas) {
         super.onDraw(canvas)
-        // Firmware owns the visible ink; keep this view transparent so its overlay shows.
+        // The dissolving snapshot draws in both modes (it replaces the firmware ink as it clears).
+        fadingBitmap?.let {
+            bitmapPaint.alpha = fadeAlpha
+            canvas.drawBitmap(it, 0f, 0f, bitmapPaint)
+        }
+        // Firmware owns the live ink; keep this view transparent so its overlay shows.
         if (firmwareInkActive) return
         val bmp = inkBitmap ?: return
         bitmapPaint.alpha = inkAlpha
@@ -309,22 +318,41 @@ class InkView(context: Context) : View(context) {
         return bitmap
     }
 
-    /** E-ink friendly stepped fade: a few discrete gray levels, then gone. */
-    fun fadeInk(onDone: (() -> Unit)? = null) {
+    /**
+     * "The page drinks your ink." Snapshot the written strokes into a fading layer, reset the live
+     * ink state for the next turn, and dissolve the snapshot out in stepped gray levels. Works in
+     * firmware-ink mode too: the snapshot takes over the pixels as the firmware overlay is cleared,
+     * so the ink appears to be absorbed rather than blinking off.
+     */
+    fun dissolveInk(onDone: (() -> Unit)? = null) {
         removeCallbacks(restRunnable)
-        val steps = intArrayOf(150, 70, 0)
+        val src = inkBitmap
+        if (src == null || strokes.isEmpty()) {
+            clearInk()
+            onDone?.invoke()
+            return
+        }
+        fadingBitmap = src.copy(Bitmap.Config.ARGB_8888, false)
+        fadeAlpha = 255
+        // Reset live state now so the next stroke starts clean.
+        strokes.clear()
+        src.eraseColor(Color.TRANSPARENT)
+        current = null
+        hasPrediction = false
+        predicted.setEmpty()
+        inkAlpha = 255
+        invalidate()
+
+        val steps = intArrayOf(210, 160, 110, 60, 0)
         steps.forEachIndexed { i, alpha ->
             postDelayed({
+                fadeAlpha = alpha
                 if (alpha == 0) {
-                    strokes.clear()
-                    inkBitmap?.eraseColor(Color.TRANSPARENT)
-                    inkAlpha = 255
+                    fadingBitmap = null
                     onDone?.invoke()
-                } else {
-                    inkAlpha = alpha
                 }
                 invalidate()
-            }, FADE_STEP_MS * (i + 1))
+            }, DISSOLVE_STEP_MS * (i + 1))
         }
     }
 
@@ -342,7 +370,7 @@ class InkView(context: Context) : View(context) {
         const val HOLD_SLOP = 48f
         const val ERASE_R = 28f
         const val PAD = 32f
-        const val FADE_STEP_MS = 350L
+        const val DISSOLVE_STEP_MS = 300L
         // Long-edge cap for the exported snapshot: smaller uploads and roughly half
         // the vision tokens vs 1568px, while handwriting stays comfortably legible.
         const val MAX_EDGE = 1120f

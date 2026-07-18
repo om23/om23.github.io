@@ -11,24 +11,24 @@ import android.util.TypedValue
 import android.view.View
 
 /**
- * Renders the diary's answer in a flowing hand, one word at a time,
- * holds it long enough to read, then fades it back into the page.
+ * Renders the diary's answer in a flowing hand. While the diary composes, ink dots pulse where the
+ * reply will land; when it arrives the whole reply materializes with a gentle fade-in, holds long
+ * enough to read, then dissolves back into the page.
  */
 class ReplyView(context: Context) : View(context) {
 
     var onFinished: (() -> Unit)? = null
 
-    private var words: List<String> = emptyList()
-    private var visibleWords = 0
     private var layout: StaticLayout? = null
     private var textAlpha = 255
+    private var showing = false
+
+    /** Where the top of the reply wants to sit (view Y); < 0 means the default upper-page spot. */
+    private var anchorY = -1f
 
     // Posted callbacks capture the generation they belong to; bumping it
     // invalidates everything in flight without touching other views' handlers.
     private var generation = 0
-
-    /** Where the top of the reply wants to sit (view Y); < 0 means the default upper-page spot. */
-    private var anchorY = -1f
 
     private val textPaint = TextPaint(TextPaint.ANTI_ALIAS_FLAG).apply {
         color = Color.BLACK
@@ -48,12 +48,22 @@ class ReplyView(context: Context) : View(context) {
     fun reveal(text: String, belowY: Float = -1f) {
         generation++
         anchorY = if (belowY >= 0) belowY + GAP else -1f
-        words = text.trim().split(Regex("\\s+")).filter { it.isNotEmpty() }
-        visibleWords = 0
-        textAlpha = 255
-        layout = null
+        val body = text.trim()
+        if (body.isEmpty()) { showing = false; return }
+        showing = true
+        layout = buildLayout(body)
+        textAlpha = 0
         invalidate()
-        revealNext(generation)
+        fadeIn(generation)
+    }
+
+    fun isShowing(): Boolean = showing
+
+    /** Cut the hold short (e.g. the writer picked the pen back up). */
+    fun dismiss() {
+        if (!showing) return
+        generation++
+        fadeOut(generation)
     }
 
     /**
@@ -63,7 +73,7 @@ class ReplyView(context: Context) : View(context) {
     fun showMusing(belowY: Float = -1f) {
         generation++
         anchorY = if (belowY >= 0) belowY + GAP else -1f
-        words = emptyList()
+        showing = false
         textAlpha = 255
         layout = null
         invalidate()
@@ -80,29 +90,19 @@ class ReplyView(context: Context) : View(context) {
         }, MUSE_MS)
     }
 
-    fun isShowing(): Boolean = words.isNotEmpty()
-
-    /** Cut the reveal/hold short (e.g. the writer picked the pen back up). */
-    fun dismiss() {
-        if (!isShowing()) return
-        generation++
-        visibleWords = words.size
-        rebuildLayout()
-        fadeOut(generation)
-    }
-
-    private fun revealNext(gen: Int) {
-        postDelayed({
-            if (gen != generation) return@postDelayed
-            if (visibleWords < words.size) {
-                visibleWords++
-                rebuildLayout()
+    /** Materialize the reply in stepped alpha — it fades onto the page. */
+    private fun fadeIn(gen: Int) {
+        val steps = intArrayOf(50, 110, 170, 220, 255)
+        steps.forEachIndexed { i, a ->
+            postDelayed({
+                if (gen != generation) return@postDelayed
+                textAlpha = a
                 invalidate()
-                revealNext(gen)
-            } else {
-                postDelayed({ if (gen == generation) fadeOut(gen) }, HOLD_MS)
-            }
-        }, WORD_MS)
+                if (i == steps.size - 1) {
+                    postDelayed({ if (gen == generation) fadeOut(gen) }, HOLD_MS)
+                }
+            }, FADE_STEP_MS * (i + 1))
+        }
     }
 
     private fun fadeOut(gen: Int) {
@@ -112,17 +112,13 @@ class ReplyView(context: Context) : View(context) {
                 if (gen != generation) return@postDelayed
                 textAlpha = alpha
                 if (alpha == 0) {
-                    words = emptyList()
+                    showing = false
                     layout = null
                     onFinished?.invoke()
                 }
                 invalidate()
             }, FADE_STEP_MS * (i + 1))
         }
-    }
-
-    private fun rebuildLayout() {
-        layout = buildLayout(words.take(visibleWords).joinToString(" "))
     }
 
     private fun buildLayout(text: String): StaticLayout {
@@ -150,9 +146,8 @@ class ReplyView(context: Context) : View(context) {
     }
 
     private companion object {
-        const val WORD_MS = 320L
         const val HOLD_MS = 16_000L
-        const val FADE_STEP_MS = 400L
+        const val FADE_STEP_MS = 300L
         const val MARGIN = 72
         const val GAP = 48f
         const val MUSE_MS = 600L

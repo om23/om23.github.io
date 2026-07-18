@@ -91,8 +91,10 @@ class MainActivity : Activity() {
         consulting = true
         inkView.restTimerEnabled = false
         hint.text = ""
-        firmwareInk.clearAll()   // the page drinks the firmware ink
-        inkView.fadeInk()
+        // Snapshot the strokes into a fading layer first, then clear the firmware overlay a beat
+        // later so the snapshot has taken over the pixels — the ink dissolves instead of blinking off.
+        inkView.dissolveInk()
+        inkView.postDelayed({ firmwareInk.clearAll() }, 60)
         replyView.showMusing(inkView.lastInkBottom)
 
         scope.launch {
