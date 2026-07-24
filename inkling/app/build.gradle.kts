@@ -9,12 +9,14 @@ plugins {
 // typed on the device. Set `inkling.apiKey=sk-ant-...` in local.properties (gitignored)
 // or export INKLING_API_KEY before building. Anyone holding the APK can extract the
 // key — only do this for builds that stay on your own device.
-val builtInApiKey: String = run {
-    val props = Properties()
+val localProps: Properties = Properties().apply {
     val local = rootProject.file("local.properties")
-    if (local.exists()) local.inputStream().use { props.load(it) }
-    props.getProperty("inkling.apiKey") ?: System.getenv("INKLING_API_KEY") ?: ""
+    if (local.exists()) local.inputStream().use { load(it) }
 }
+val builtInApiKey: String =
+    localProps.getProperty("inkling.apiKey") ?: System.getenv("INKLING_API_KEY") ?: ""
+val builtInOpenRouterKey: String =
+    localProps.getProperty("inkling.openrouterKey") ?: System.getenv("INKLING_OPENROUTER_KEY") ?: ""
 
 android {
     namespace = "com.ommahida.inkling"
@@ -29,6 +31,7 @@ android {
         versionName = "0.1.0"
 
         buildConfigField("String", "BUILT_IN_API_KEY", "\"$builtInApiKey\"")
+        buildConfigField("String", "BUILT_IN_OPENROUTER_KEY", "\"$builtInOpenRouterKey\"")
     }
 
     buildFeatures {

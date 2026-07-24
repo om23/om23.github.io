@@ -35,6 +35,19 @@ class SettingsActivity : Activity() {
             setPadding(0, 32, 0, 8)
         })
 
+        label("Provider")
+        val providerIds = listOf(Config.PROVIDER_ANTHROPIC, Config.PROVIDER_OPENROUTER)
+        val providerLabels = listOf("Anthropic (Claude direct)", "OpenRouter")
+        val providerSpinner = Spinner(this).apply {
+            adapter = ArrayAdapter(
+                this@SettingsActivity,
+                android.R.layout.simple_spinner_item,
+                providerLabels,
+            ).apply { setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item) }
+            setSelection(providerIds.indexOf(config.provider).coerceAtLeast(0))
+        }
+        column.addView(providerSpinner)
+
         label("Anthropic API key")
         val keyField = EditText(this).apply {
             inputType = InputType.TYPE_CLASS_TEXT or InputType.TYPE_TEXT_VARIATION_PASSWORD
@@ -69,6 +82,28 @@ class SettingsActivity : Activity() {
         }
         column.addView(modelSpinner)
 
+        label("OpenRouter API key")
+        val orKeyField = EditText(this).apply {
+            inputType = InputType.TYPE_CLASS_TEXT or InputType.TYPE_TEXT_VARIATION_PASSWORD
+            setText(config.openrouterKey)
+            hint = "sk-or-…"
+        }
+        column.addView(orKeyField)
+
+        label("OpenRouter model")
+        val orModelField = EditText(this).apply {
+            inputType = InputType.TYPE_CLASS_TEXT
+            setText(config.openrouterModel)
+            hint = Config.DEFAULT_OPENROUTER_MODEL
+        }
+        column.addView(orModelField)
+        column.addView(TextView(this).apply {
+            text = "any vision-capable slug from openrouter.ai/models — e.g. anthropic/claude-sonnet-4, google/gemini-2.5-flash"
+            setTextColor(Color.GRAY)
+            textSize = 12f
+            setPadding(0, 4, 0, 0)
+        })
+
         label("Persona (the diary's voice)")
         val personaField = EditText(this).apply {
             inputType = InputType.TYPE_CLASS_TEXT or InputType.TYPE_TEXT_FLAG_MULTI_LINE
@@ -80,15 +115,19 @@ class SettingsActivity : Activity() {
         column.addView(Button(this).apply {
             text = "Save"
             setOnClickListener {
+                config.provider = providerIds[providerSpinner.selectedItemPosition]
                 config.apiKey = keyField.text.toString()
                 config.model = modelIds[modelSpinner.selectedItemPosition]
+                config.openrouterKey = orKeyField.text.toString()
+                config.openrouterModel = orModelField.text.toString()
                 config.persona = personaField.text.toString()
                 finish()
             }
         })
 
         column.addView(TextView(this).apply {
-            text = "Your key is stored only on this device and sent only to api.anthropic.com."
+            text = "Your key is stored only on this device and sent only to the provider you select " +
+                "(api.anthropic.com or openrouter.ai)."
             setTextColor(Color.GRAY)
             textSize = 13f
             setPadding(0, 24, 0, 0)

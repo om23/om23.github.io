@@ -19,11 +19,11 @@ import java.time.Duration
 import java.util.Base64
 
 /**
- * The voice inside the page. Sends a snapshot of the handwriting to Claude and
+ * The Anthropic voice inside the page. Sends a snapshot of the handwriting to Claude and
  * returns both a transcription (kept as conversation history so the diary
  * remembers the session) and the reply to ink back.
  */
-class Oracle(private val config: Config) {
+class Oracle(private val config: Config) : DiaryOracle {
 
     private var client: AnthropicClient? = null
     private var clientKey: String? = null
@@ -39,11 +39,7 @@ class Oracle(private val config: Config) {
             .also { client = it; clientKey = key }
     }
 
-    /**
-     * Blocking — call from a background dispatcher.
-     * @param history prior exchanges in this session as (what was written, what the diary said).
-     */
-    fun consult(ink: Bitmap, history: List<Pair<String, String>>): DiaryTurn {
+    override fun consult(ink: Bitmap, history: List<Pair<String, String>>): DiaryTurn {
         val png = ByteArrayOutputStream().use { out ->
             ink.compress(Bitmap.CompressFormat.PNG, 100, out)
             out.toByteArray()

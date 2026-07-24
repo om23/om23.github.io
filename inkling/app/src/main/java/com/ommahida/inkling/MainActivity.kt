@@ -21,7 +21,8 @@ import kotlinx.coroutines.withContext
 class MainActivity : Activity() {
 
     private lateinit var config: Config
-    private lateinit var oracle: Oracle
+    private lateinit var anthropicOracle: Oracle
+    private lateinit var openRouterOracle: OpenRouterOracle
     private lateinit var firmwareInk: FirmwareInk
     private lateinit var inkView: InkView
     private lateinit var replyView: ReplyView
@@ -38,7 +39,8 @@ class MainActivity : Activity() {
         window.addFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON)
 
         config = Config(this)
-        oracle = Oracle(config)
+        anthropicOracle = Oracle(config)
+        openRouterOracle = OpenRouterOracle(config)
         firmwareInk = FirmwareInk(this)
 
         inkView = InkView(this).apply {
@@ -83,10 +85,12 @@ class MainActivity : Activity() {
     private fun consultDiary(ink: Bitmap) {
         if (consulting) return
 
-        if (config.apiKey.isEmpty()) {
+        if (!config.hasActiveKey) {
             hint.text = getString(R.string.hint_no_key)
             return
         }
+        val oracle: DiaryOracle =
+            if (config.provider == Config.PROVIDER_OPENROUTER) openRouterOracle else anthropicOracle
 
         consulting = true
         inkView.restTimerEnabled = false
