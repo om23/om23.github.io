@@ -23,6 +23,7 @@ class MainActivity : Activity() {
     private lateinit var config: Config
     private lateinit var anthropicOracle: Oracle
     private lateinit var openRouterOracle: OpenRouterOracle
+    private lateinit var diaryHistory: DiaryHistory
     private lateinit var firmwareInk: FirmwareInk
     private lateinit var inkView: InkView
     private lateinit var replyView: ReplyView
@@ -44,6 +45,11 @@ class MainActivity : Activity() {
         anthropicOracle = Oracle(config)
         openRouterOracle = OpenRouterOracle(config)
         firmwareInk = FirmwareInk(this)
+
+        // Seed the session's memory from recent persisted exchanges so the diary
+        // remembers the conversation across restarts.
+        diaryHistory = DiaryHistory(this)
+        history.addAll(diaryHistory.recentPairs(HISTORY_CONTEXT))
 
         inkView = InkView(this).apply {
             onInkRested = ::consultDiary
@@ -124,6 +130,7 @@ class MainActivity : Activity() {
                 history.add(turn.transcription to turn.reply)
                 // The diary only remembers so much; keep the recent thread of conversation.
                 while (history.size > 12) history.removeAt(0)
+                diaryHistory.append(turn.transcription, turn.reply)
                 replyView.reveal(turn.reply, inkView.lastInkBottom)
             } else {
                 replyView.reveal(getString(R.string.reply_error), inkView.lastInkBottom)
@@ -135,5 +142,10 @@ class MainActivity : Activity() {
         super.onDestroy()
         firmwareInk.teardown()
         scope.cancel()
+    }
+
+    private companion object {
+        // How many past exchanges to reload as conversation memory on launch.
+        const val HISTORY_CONTEXT = 8
     }
 }

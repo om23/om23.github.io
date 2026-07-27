@@ -35,6 +35,13 @@ class SettingsActivity : Activity() {
             setPadding(0, 32, 0, 8)
         })
 
+        column.addView(Button(this).apply {
+            text = "View history"
+            setOnClickListener {
+                startActivity(android.content.Intent(this@SettingsActivity, HistoryActivity::class.java))
+            }
+        })
+
         label("Provider")
         val providerIds = listOf(Config.PROVIDER_ANTHROPIC, Config.PROVIDER_OPENROUTER)
         val providerLabels = listOf("Anthropic (Claude direct)", "OpenRouter")

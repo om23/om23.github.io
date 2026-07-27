@@ -25,5 +25,10 @@
             android:exported="false"
             android:label="@string/settings_title" />
 
+        <activity
+            android:name=".HistoryActivity"
+            android:exported="false"
+            android:label="History" />
+
     </application>
 </manifest>
