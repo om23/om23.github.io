@@ -39,6 +39,8 @@ class MainActivity : Activity() {
         window.addFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON)
 
         config = Config(this)
+        // Pick up a key pushed over adb (see KeyImport) before anything reads the config.
+        KeyImport.importIfPresent(this, config)
         anthropicOracle = Oracle(config)
         openRouterOracle = OpenRouterOracle(config)
         firmwareInk = FirmwareInk(this)
@@ -75,8 +77,13 @@ class MainActivity : Activity() {
 
     override fun onWindowFocusChanged(hasFocus: Boolean) {
         super.onWindowFocusChanged(hasFocus)
-        // The firmware resets pen ownership when focus changes, so (re)claim on every focus gain.
         if (hasFocus) {
+            // A key can be pushed over adb while the app is open; pick it up on focus gain.
+            if (KeyImport.importIfPresent(this, config) && !consulting && !replyView.isShowing()) {
+                hint.text = if (config.hasActiveKey) getString(R.string.hint_first_run)
+                            else getString(R.string.hint_no_key)
+            }
+            // The firmware resets pen ownership when focus changes, so (re)claim on every focus gain.
             inkView.firmwareInkActive = firmwareInk.setup()
             inkView.invalidate()
         }

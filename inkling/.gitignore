@@ -7,9 +7,10 @@ app/src/main/res/font/
 captures/
 .DS_Store
 
-# Secrets — never commit. Keys live here (or in env vars), injected at build time.
+# Secrets — never commit. Keys live here (or in env vars / a pushed key file), not in git.
 local.properties
 *.local.properties
+inkling.properties
 .env
 .env.*
 secrets.properties

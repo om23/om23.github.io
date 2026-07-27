@@ -77,9 +77,23 @@ key, and model in the settings drawer (two-finger hold on the page). Get keys at
 rest** via the Android Keystore (AES-256-GCM; the key material is non-exportable and never written
 to disk in plaintext) and sent only to the provider you selected. Nothing is baked into the APK.
 
-**2. Injected at build time (convenient for personal builds).** Typing on e-ink is miserable, so
-you can supply the key at build time instead — from `local.properties` (gitignored) or environment
-variables. Copy `local.properties.example` to `local.properties` and fill it in:
+**2. Pushed over adb (no typing, no secret in the APK — recommended for sideloading).** Since you
+already sideload over adb, provision the key the same way. Copy `inkling.properties.example` to
+`inkling.properties`, fill it in, and push it to the app's own external files dir:
+
+```
+adb push inkling.properties /sdcard/Android/data/com.ommahida.inkling/files/inkling.properties
+```
+
+On the next launch (or when you re-focus the app) Inkling reads it, stores the key **encrypted via
+the Android Keystore**, and **deletes the plaintext file** from the device. The key never touches
+the e-ink keyboard, is never embedded in the APK, and `inkling.properties` is gitignored so it never
+reaches git. (If the push fails because the directory doesn't exist yet, launch the app once first —
+that creates it — then push and re-focus.)
+
+**3. Baked in at build time (convenient, but embeds the key in the APK).** You can instead supply
+the key at build time from `local.properties` (gitignored) or environment variables — copy
+`local.properties.example` to `local.properties`:
 
 ```
 sdk.dir=/path/to/android/sdk
@@ -88,9 +102,9 @@ inkling.openrouterKey=sk-or-...    # or INKLING_OPENROUTER_KEY
 ```
 
 The build reads these into `BuildConfig`; an on-device key still overrides them. **Trade-off:** a
-baked-in key is embedded in the APK binary and can be extracted from it, so only use this for
-builds that stay on your own device, and put a spend limit on the key in the provider's console.
-`local.properties` and common secret files are gitignored, so a key set this way never reaches git.
+baked-in key is embedded in the APK binary and can be extracted from it, so prefer method 2 unless
+the APK never leaves your device — and either way, set a spend limit on the key. `local.properties`
+and common secret files are gitignored, so a key set this way never reaches git.
 
 ## Installing on a Supernote
 
