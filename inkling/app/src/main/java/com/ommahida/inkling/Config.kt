@@ -13,16 +13,16 @@ class Config(context: Context) {
 
     /** A key entered in settings wins; otherwise fall back to the one baked in at build time. */
     var apiKey: String
-        get() = (prefs.getString(KEY_API, "") ?: "").ifEmpty { BuildConfig.BUILT_IN_API_KEY }
-        set(value) = prefs.edit().putString(KEY_API, value.trim()).apply()
+        get() = readSecret(KEY_API).ifEmpty { BuildConfig.BUILT_IN_API_KEY }
+        set(value) = writeSecret(KEY_API, value)
 
     var model: String
         get() = prefs.getString(KEY_MODEL, DEFAULT_MODEL) ?: DEFAULT_MODEL
         set(value) = prefs.edit().putString(KEY_MODEL, value.trim().ifEmpty { DEFAULT_MODEL }).apply()
 
     var openrouterKey: String
-        get() = (prefs.getString(KEY_OR_KEY, "") ?: "").ifEmpty { BuildConfig.BUILT_IN_OPENROUTER_KEY }
-        set(value) = prefs.edit().putString(KEY_OR_KEY, value.trim()).apply()
+        get() = readSecret(KEY_OR_KEY).ifEmpty { BuildConfig.BUILT_IN_OPENROUTER_KEY }
+        set(value) = writeSecret(KEY_OR_KEY, value)
 
     var openrouterModel: String
         get() = prefs.getString(KEY_OR_MODEL, DEFAULT_OPENROUTER_MODEL) ?: DEFAULT_OPENROUTER_MODEL
@@ -35,6 +35,21 @@ class Config(context: Context) {
             PROVIDER_OPENROUTER -> openrouterKey.isNotEmpty()
             else -> apiKey.isNotEmpty()
         }
+
+    /** Read a key stored encrypted-at-rest, tolerating a pre-encryption plaintext value. */
+    private fun readSecret(key: String): String {
+        val stored = prefs.getString(key, "") ?: ""
+        if (stored.isEmpty()) return ""
+        // decrypt() returns null for a legacy plaintext value → fall through to the raw string.
+        return SecureStore.decrypt(stored) ?: stored
+    }
+
+    /** Store a key encrypted; if the Keystore is unavailable, store the raw value rather than lose it. */
+    private fun writeSecret(key: String, value: String) {
+        val trimmed = value.trim()
+        val toStore = if (trimmed.isEmpty()) "" else (SecureStore.encrypt(trimmed) ?: trimmed)
+        prefs.edit().putString(key, toStore).apply()
+    }
 
     var persona: String
         get() = prefs.getString(KEY_PERSONA, DEFAULT_PERSONA) ?: DEFAULT_PERSONA

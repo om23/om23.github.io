@@ -2,8 +2,17 @@
 build/
 # downloaded at build time by the downloadReplyFont task
 app/src/main/res/font/
-local.properties
 .idea/
 *.iml
 captures/
 .DS_Store
+
+# Secrets — never commit. Keys live here (or in env vars), injected at build time.
+local.properties
+*.local.properties
+.env
+.env.*
+secrets.properties
+*.keystore
+*.jks
+*.p12

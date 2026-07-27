@@ -63,20 +63,34 @@ gradle wrapper            # once, to generate the wrapper
 The APK lands in `app/build/outputs/apk/`. The Dancing Script typeface is downloaded
 automatically on first build (it's OFL-licensed; the repo carries no binaries).
 
-### Baking in your API key (recommended for personal builds)
+## API keys & security
 
-Typing an API key on an e-ink tablet is miserable. Instead, add it to `local.properties`
-(gitignored) before building:
+Inkling can answer via **Anthropic (Claude)** directly or via **[OpenRouter](https://openrouter.ai)**
+(an OpenAI-compatible gateway to many models — Claude, GPT, Gemini, …). You pick the provider,
+key, and model in the settings drawer (two-finger hold on the page). Get keys at
+[platform.claude.com](https://platform.claude.com) or
+[openrouter.ai/keys](https://openrouter.ai/keys).
+
+**No keys live in this repository.** They come from one of two places, both kept out of git:
+
+**1. Entered on-device (most secure).** Type the key once in settings. It's stored **encrypted at
+rest** via the Android Keystore (AES-256-GCM; the key material is non-exportable and never written
+to disk in plaintext) and sent only to the provider you selected. Nothing is baked into the APK.
+
+**2. Injected at build time (convenient for personal builds).** Typing on e-ink is miserable, so
+you can supply the key at build time instead — from `local.properties` (gitignored) or environment
+variables. Copy `local.properties.example` to `local.properties` and fill it in:
 
 ```
 sdk.dir=/path/to/android/sdk
-inkling.apiKey=sk-ant-...
+inkling.apiKey=sk-ant-...          # or set INKLING_API_KEY in the environment
+inkling.openrouterKey=sk-or-...    # or INKLING_OPENROUTER_KEY
 ```
 
-The key is compiled into the APK, so the app works immediately after install — no on-device
-setup. A key entered in the settings drawer still overrides it. **Anyone who has the APK file
-can extract a baked-in key**, so only do this for builds that stay on your own device, and
-consider putting a spend limit on the key in the Anthropic console.
+The build reads these into `BuildConfig`; an on-device key still overrides them. **Trade-off:** a
+baked-in key is embedded in the APK binary and can be extracted from it, so only use this for
+builds that stay on your own device, and put a spend limit on the key in the provider's console.
+`local.properties` and common secret files are gitignored, so a key set this way never reaches git.
 
 ## Installing on a Supernote
 
@@ -84,10 +98,8 @@ consider putting a spend limit on the key in the Anthropic console.
    (or transfer the APK and open it from the Files app, depending on firmware).
 2. Copy the APK to the device over USB, or install directly with
    `adb install app/build/outputs/apk/debug/app-debug.apk` if ADB is enabled.
-3. Open Inkling, two-finger hold, and paste your Anthropic API key
-   (get one at <https://platform.claude.com>).
-
-The key is stored only on the device and sent only to `api.anthropic.com`.
+3. If you didn't inject a key at build time, open Inkling, two-finger hold, choose your provider,
+   and enter your key.
 
 ## Credits
 

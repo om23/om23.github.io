@@ -1,0 +1,14 @@
+# Copy this file to `local.properties` (which is gitignored) and fill in the values.
+# local.properties is read only at build time; nothing here is committed to git.
+
+# Required: path to your Android SDK (Android Studio sets this automatically).
+sdk.dir=/Users/you/Library/Android/sdk
+
+# Optional: bake an API key into the APK so you never type it on the tablet.
+# Leave blank to enter the key on-device instead (stored encrypted via the Android Keystore).
+# NOTE: a baked-in key is embedded in the APK binary and can be extracted from it —
+# only use this for builds that stay on your own device, and set a spend limit on the key.
+# Either of these may also be supplied as environment variables at build time:
+#   INKLING_API_KEY, INKLING_OPENROUTER_KEY
+inkling.apiKey=
+inkling.openrouterKey=
