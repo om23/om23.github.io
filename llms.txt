@@ -1,0 +1,43 @@
+# Om Mahida
+
+> Product leader and builder — VP of Product at Medcrypt, based in Seattle, WA. Software engineer first, now shipping product. The website at https://ommahida.com leads with projects and personal writing; this file holds the professional background for anyone (or any agent) who wants the résumé detail.
+
+## About
+
+I'm a product leader with 9+ years building technical products — software engineer first, now VP of Product at Medcrypt. I use Claude Code daily to prototype and ship production features. I've launched two products from concept to Fortune 500 and federal agency customers, and have been integrating LLMs into production for 2+ years. Earlier, I co-founded Fireflies (now Fireflies.ai).
+
+## Experience
+
+### Medcrypt — Oct 2016 to Present
+Roles: VP of Product (2022–Present) · Product Manager (2020–2022) · Software Engineer (2016–2020)
+
+- Employee #1; joined as founding engineer and built the company from the first line of code to 50+ enterprise customers including Fortune 500 companies and federal agencies.
+- Prototyped a product with Claude Code that became the company flagship, growing into a $1M+ product line with an active federal agency pilot.
+- Launched a 0-to-1 product in the medtech software supply chain space, grown to $1M+ in revenue.
+- Took engineering deployment frequency from monthly to daily, maintaining output at half the previous team size.
+- Led LLM integration across the portfolio, including RAG vs. structured knowledge base evaluation and building a multi-agent orchestrator.
+- Use Claude and Claude Code daily for everything from shipping production features to product strategy and PRDs.
+
+### Fireflies (now Fireflies.ai) — 2014 to 2016
+Role: Co-founder
+
+- Deployed ML classification algorithms and led platform development supporting 10,000+ concurrent users.
+- Left to complete undergraduate degree at Drexel University.
+
+## What I Work With
+
+- **Product:** 0-to-1, Product Vision, Roadmapping, OKRs, GTM Strategy, Pricing
+- **AI / Technical:** LLM Integration, RAG, Context Engineering, Claude Code, Python, JavaScript, SQL, Git
+- **Domain:** Cybersecurity, Regulatory Compliance, Developer Tools, B2B SaaS
+
+## Education
+
+- Drexel University — B.S. Computer Engineering, 2017
+- Reforge — Mastering Product Management, 2023
+- Stanford CPD — Product Management, 2020
+
+## Contact
+
+- Email: ommahida@gmail.com
+- LinkedIn: https://linkedin.com/in/ommahida
+- GitHub: https://github.com/om23
