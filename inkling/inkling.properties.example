@@ -1,0 +1,20 @@
+# Provision Inkling's API key WITHOUT typing on the e-ink screen and WITHOUT
+# baking a secret into the APK. Copy this to `inkling.properties`, fill it in,
+# then push it to the device over adb:
+#
+#   adb push inkling.properties /sdcard/Android/data/com.ommahida.inkling/files/inkling.properties
+#
+# On the next launch (or when you re-focus the app) Inkling reads this file,
+# stores the keys encrypted via the Android Keystore, and DELETES this plaintext
+# file from the device. Nothing here is committed to git (inkling.properties is
+# gitignored) and nothing is embedded in the APK.
+
+# Which backend answers: "anthropic" or "openrouter"
+provider=anthropic
+
+# Fill in only the key(s) you use.
+inkling.apiKey=sk-ant-...
+inkling.openrouterKey=sk-or-...
+
+# Optional: any vision-capable slug from openrouter.ai/models
+openrouter.model=openai/gpt-4o

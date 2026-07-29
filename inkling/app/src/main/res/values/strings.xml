@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="app_name">Inkling</string>
+    <string name="settings_title">Inkling Settings</string>
+    <string name="hint_first_run">write to me…   (two-finger long-press for settings)</string>
+    <string name="hint_no_key">the diary is silent — add an API key in settings (two-finger long-press)</string>
+    <string name="hint_thinking">the page drinks your ink…</string>
+    <string name="reply_error">the ink swirls, but no answer comes. try again in a moment.</string>
+</resources>

@@ -1,0 +1,19 @@
+.gradle/
+build/
+# downloaded at build time by the downloadReplyFont task
+app/src/main/res/font/
+.idea/
+*.iml
+captures/
+.DS_Store
+
+# Secrets — never commit. Keys live here (or in env vars / a pushed key file), not in git.
+local.properties
+*.local.properties
+inkling.properties
+.env
+.env.*
+secrets.properties
+*.keystore
+*.jks
+*.p12
